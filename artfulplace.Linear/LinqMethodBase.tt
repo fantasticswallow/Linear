@@ -1,0 +1,91 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Reflection" #>
+<#@ output extension=".cs" #>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using artfulplace.Linear.Core;
+using artfulplace.Linear.Linq;
+using artfulplace.Linear.Lambda;
+
+namespace artfulplace.Linear
+{
+	internal class LinqMethodBase
+	{
+
+<#
+	foreach (var m in typeof(Queryable).GetMethods().GroupBy(_ => _.Name))
+			{
+#>
+		internal static IQueryable<T> <#= m.Key #><T> (IQueryable<T> source, object[] args)
+		{
+<#
+			foreach (var m2 in m.GroupBy(_ => _.GetParameters().Count()))
+			{
+#>
+			if (args.Count() == <#= (m2.Key - 1).ToString() #>)
+			{
+<#
+			var argstr = "";
+			for (var i = 0;i < m2.Key - 1; i++)
+			{
+				argstr += "args[" + i.ToString() + "],";
+			}
+			if (argstr != "")
+			{
+				argstr = argstr.Remove(argstr.Length - 1);
+			}
+			foreach (var ms in m2)
+			{
+				var s = "";
+				foreach (var p in ms.GetParameters())
+				{
+					s += p.ParameterType.Name;
+					if (p.ParameterType.IsGenericType)
+					{
+						s += "[";
+						foreach (var gp in p.ParameterType.GenericTypeArguments)
+						{
+							s += gp.Name + " ";
+							if (gp.IsGenericType)
+							{
+								s += "[";
+								foreach (var gp2 in gp.GenericTypeArguments)
+								{
+									s += gp2.Name + " ";
+								}
+								s = s.Remove(s.Length - 1);
+								s += "]";
+							}
+						}
+						s = s.Remove(s.Length - 1);
+						s += "]";
+					}
+					s += " ";
+				}
+#>
+				// <#= s #>
+				return source.<#= ms.Name #>(<#= argstr #>);
+<#
+			}
+#>
+			}
+			else
+			{
+				throw new ArgumentException("メソッド名 IQueryable<T>.<#= m.Key #> においてエラーが発生しました。引数の型、または数が正しくありません。");
+			}
+<#
+		}
+#>
+		}
+<#
+		}
+#>
+
+
+	}
+}

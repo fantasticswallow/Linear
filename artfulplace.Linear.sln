@@ -1,0 +1,47 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "artfulplace.Linear", "artfulplace.Linear\artfulplace.Linear.csproj", "{F1C17938-7853-47FF-8399-1770F1A9AFE2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "artfulplace.Linear.Linq", "artfulplace.Linear.Linq\artfulplace.Linear.Linq.csproj", "{72C8EBB4-F009-4D41-8604-2CF5496FAECF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConsole", "TestConsole\TestConsole.csproj", "{3F7A65C5-8FF0-4BC9-808C-80EBE3217144}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 4
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://f-swallow.visualstudio.com/defaultcollection
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = artfulplace.Linear.Linq\\artfulplace.Linear.Linq.csproj
+		SccProjectName1 = artfulplace.Linear.Linq
+		SccLocalPath1 = artfulplace.Linear.Linq
+		SccProjectUniqueName2 = artfulplace.Linear\\artfulplace.Linear.csproj
+		SccProjectName2 = artfulplace.Linear
+		SccLocalPath2 = artfulplace.Linear
+		SccProjectUniqueName3 = TestConsole\\TestConsole.csproj
+		SccProjectName3 = TestConsole
+		SccLocalPath3 = TestConsole
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F1C17938-7853-47FF-8399-1770F1A9AFE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1C17938-7853-47FF-8399-1770F1A9AFE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1C17938-7853-47FF-8399-1770F1A9AFE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1C17938-7853-47FF-8399-1770F1A9AFE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72C8EBB4-F009-4D41-8604-2CF5496FAECF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72C8EBB4-F009-4D41-8604-2CF5496FAECF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72C8EBB4-F009-4D41-8604-2CF5496FAECF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72C8EBB4-F009-4D41-8604-2CF5496FAECF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F7A65C5-8FF0-4BC9-808C-80EBE3217144}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F7A65C5-8FF0-4BC9-808C-80EBE3217144}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F7A65C5-8FF0-4BC9-808C-80EBE3217144}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F7A65C5-8FF0-4BC9-808C-80EBE3217144}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
