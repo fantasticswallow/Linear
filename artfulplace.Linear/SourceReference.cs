@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,7 @@ using artfulplace.Linear.Linq;
 
 namespace artfulplace.Linear
 {
-    public class SourceReference<T>
+    public class SourceReference
     {
         public SourceReference(string name)
         {
@@ -16,7 +17,7 @@ namespace artfulplace.Linear
 
         public string TargetName { get; set; }
 
-        public IEnumerable<T> Result()
+        public IEnumerable Result()
         {
             var namecol = TargetName.Split('.');
             var ty = EntryAssembly.GetType(namecol[0]);

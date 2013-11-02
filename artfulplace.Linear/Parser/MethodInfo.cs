@@ -21,6 +21,10 @@ namespace artfulplace.Linear.Core
 
         internal Type[] GetArgumentTypes()
         {
+            if (this.Args == null)
+            {
+                return null;
+            }
             return this.Args.Select(_ => _.GetType2()).ToArray();
         }
     }

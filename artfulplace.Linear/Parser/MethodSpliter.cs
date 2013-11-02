@@ -41,51 +41,58 @@ namespace artfulplace.Linear.Core
         internal IEnumerable<MethodInfo> RootSplit(string target,BracketParseInfo brackInfo)
         {
             target = target.Replace("\\\"", "\"");
-            brackInfo.Children.ForEach((x, idx) =>
+            if (brackInfo != null)
             {
-                var idx2 = target.IndexOf(x.Result);
-                target = target.Remove(idx2, x.Result.Length).Insert(idx2, "{" + idx.ToString() + "}");
-            });
+                brackInfo.Children.ForEach((x, idx) =>
+                {
+                    var idx2 = target.IndexOf(x.Result);
+                    target = target.Remove(idx2, x.Result.Length).Insert(idx2, "{" + idx.ToString() + "}");
+                });
+            }
             var spliter = target.Split('.').Select(_ => {
                 var info = new MethodInfo();
                 if (_.Contains("{"))
                 {
-                    info.Name = _.Remove(_.IndexOf('{'));
+                    info.Name = _.Remove(_.IndexOf('{')).Trim();
                 }
                 else
                 {
-                    info.Name = _;
+                    info.Name = _.Trim();
                 }
                 info.Type = MethodInfo.MethodType.PropertyOrField;
                 info.baseStr = _;
                 return info;
             }).ToArray();
             
-            brackInfo.Children.ForEach((x, idx) =>
+            if (brackInfo != null)
             {
-                var repOld = "{" + idx.ToString() + "}";
-                spliter = spliter.Select(_ => {
-                    if (_.baseStr.Contains(repOld))
+                brackInfo.Children.ForEach((x, idx) =>
+                {
+                    var repOld = "{" + idx.ToString() + "}";
+                    spliter = spliter.Select(_ =>
                     {
-                        _.baseStr = _.baseStr.Replace(repOld, x.Result);
-                        _.BracketInfo = x;
-                        if (x.Type == BracketParseInfo.InfoType.Round)
+                        if (_.baseStr.Contains(repOld))
                         {
-                            _.Type = MethodInfo.MethodType.Method;
-                        }
-                        else if (x.Type == BracketParseInfo.InfoType.Square)
-                        {
-                            _.Type = MethodInfo.MethodType.Property;
-                        }
+                            _.baseStr = _.baseStr.Replace(repOld, x.Result);
+                            _.BracketInfo = x;
+                            if (x.Type == BracketParseInfo.InfoType.Round)
+                            {
+                                _.Type = MethodInfo.MethodType.Method;
+                            }
+                            else if (x.Type == BracketParseInfo.InfoType.Square)
+                            {
+                                _.Type = MethodInfo.MethodType.Property;
+                            }
 
-                        if (!(String.IsNullOrEmpty(x.Capture)))
-                        {
-                            _.Args = ArgSplit(x.Capture,x);
+                            if (!(String.IsNullOrEmpty(x.Capture)) && (x.Type != BracketParseInfo.InfoType.String))
+                            {
+                                _.Args = ArgSplit(x.Capture, x);
+                            }
                         }
-                    }
-                    return _;
-                }).ToArray();
-            });
+                        return _;
+                    }).ToArray();
+                });
+            }
             return spliter;
         }
 
@@ -105,15 +112,15 @@ namespace artfulplace.Linear.Core
                     info.Type = ArgumentInfo.ArgumentType.Lambda;
                     info.BracketInfo = brackInfo;
                 }
-                else if (Regex.IsMatch(_, "[0-9]+\\.[0-9]+"))
+                else if (Regex.IsMatch(_, "^[0-9]+\\.[0-9]+$"))
                 {
                     info.Type = ArgumentInfo.ArgumentType.Double;
                 }
-                else if(Regex.IsMatch(_,"[0-9]+"))
+                else if(Regex.IsMatch(_,"^[0-9]+$"))
                 {
                     info.Type = ArgumentInfo.ArgumentType.Integer;
                 }
-                else if (Regex.IsMatch(_, "^(true|false)", RegexOptions.IgnoreCase))
+                else if (Regex.IsMatch(_, "^(true|false)$", RegexOptions.IgnoreCase))
                 {
                     info.Type = ArgumentInfo.ArgumentType.Boolean;
                 }
@@ -133,13 +140,27 @@ namespace artfulplace.Linear.Core
                     {
                         if (x.Type == BracketParseInfo.InfoType.String)
                         {
-                            _.Type = ArgumentInfo.ArgumentType.String;
-                            _.Value = _.Value.Replace(repOld, x.Capture);
+                            if (_.Type == ArgumentInfo.ArgumentType.Variable)
+                            {
+                                _.Type = ArgumentInfo.ArgumentType.String;
+                                _.Value = _.Value.Replace(repOld, x.Capture);
+                            }
+                            else
+                            {
+                                _.Value = _.Value.Replace(repOld, x.Result);
+                            }
                         }
                         else if (x.Type == BracketParseInfo.InfoType.Char)
                         {
-                            _.Type = ArgumentInfo.ArgumentType.Char;
-                            _.Value = _.Value.Replace(repOld, x.Capture);
+                            if (_.Type == ArgumentInfo.ArgumentType.Variable)
+                            {
+                                _.Type = ArgumentInfo.ArgumentType.Char;
+                                _.Value = _.Value.Replace(repOld, x.Capture);
+                            }
+                            else
+                            {
+                                _.Value = _.Value.Replace(repOld, x.Result);
+                            }
                         }
                         else
                         {

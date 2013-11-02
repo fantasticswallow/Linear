@@ -82,19 +82,19 @@ namespace artfulplace.Linear.Lambda
         {
             var curType = ArgumentInfo.ArgumentType.Variable;
             target = replaceBack(target);
-            if (Regex.IsMatch(target, "[0-9]+\\.[0-9]+"))
+            if (Regex.IsMatch(target, "^[0-9]+\\.[0-9]+$"))
             {
                 curType = ArgumentInfo.ArgumentType.Double;
             }
-            else if (Regex.IsMatch(target, "[0-9]+"))
+            else if (Regex.IsMatch(target, "^[0-9]+$"))
             {
                 curType = ArgumentInfo.ArgumentType.Integer;
             }
-            else if (Regex.IsMatch(target, "[0-9]+L"))
+            else if (Regex.IsMatch(target, "^[0-9]+L$"))
             {
                 curType = ArgumentInfo.ArgumentType.Integer;
             }
-            else if (Regex.IsMatch(target, "^(true|false)", RegexOptions.IgnoreCase))
+            else if (Regex.IsMatch(target, "^(true|false)$", RegexOptions.IgnoreCase))
             {
                 curType = ArgumentInfo.ArgumentType.Boolean;
             }
@@ -247,6 +247,7 @@ namespace artfulplace.Linear.Lambda
                         {
                             var curInfo = new ExpressionBasicInfo();
                             curInfo.Expression1 = info;
+                            curInfo.ConstantType = ArgumentInfo.ArgumentType.Variable;
                             curInfo.ExpressionString1 = replaceBack(expr1);
                             
                             if (replaceDictionary.ContainsKey(_))
@@ -266,6 +267,7 @@ namespace artfulplace.Linear.Lambda
                                 else if (x.Type == BracketParseInfo.InfoType.String)
                                 {
                                     curInfo.Expression2 = StringExpression(x.Capture);
+                                    curInfo.ConstantType = ArgumentInfo.ArgumentType.String;
                                     expr2 = x.Capture;
                                 }
                             }

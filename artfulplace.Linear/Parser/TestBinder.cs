@@ -159,19 +159,19 @@ namespace artfulplace.Linear
             return retList;
         }
 
-        public static List<String> LambdaExpressionDynamicTest3(IQueryable<int> source, string target)
+        public static List<String> LambdaExpressionDynamicTest3<T>(IQueryable<T> source, string target)
         {
 
-            var source3 = new LinearQueryable<int>(source);
+            var source3 = new LinearQueryable<T>(source);
             var info = MethodParser.MethodParse(target);
-            IQueryable<string> res;
             Expression sourceCache;
             sourceCache = Expression.Constant(source3, source3.GetType());
             info.ForEach(_ =>
             {
-                
+                sourceCache = MethodBuilder.MethodBuild(sourceCache, _);
             });
-
+            var source2 = new LinearQueryable(source, sourceCache);
+            var res = (IEnumerable<string>)source2.Provider.Execute(sourceCache);
 
             retList = new List<string>();
             res.ForEach(x => retList.Add(x));

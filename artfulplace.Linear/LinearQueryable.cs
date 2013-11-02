@@ -7,6 +7,54 @@ using System.Threading.Tasks;
 
 namespace artfulplace.Linear
 {
+
+    public class LinearQueryable : IQueryable
+    {
+        public static IQueryable CreateFromExpr(Expression expr)
+        {
+            var t = expr.Type.GenericTypeArguments[0];
+
+            var gent = typeof(LinearQueryable<>).MakeGenericType(t);
+            return (IQueryable)Activator.CreateInstance(typeof(LinearQueryable<>), null, expr);
+        }
+
+        public LinearQueryable(IQueryable _source)
+        {
+            this.source = _source;
+            this._Expression = null;
+        }
+
+        public LinearQueryable(IQueryable _source,Expression expr)
+        {
+            this.source = _source;
+            this._Expression = expr;
+        }
+
+        private IQueryable source { get; set; }
+
+        private Expression _Expression { get; set; }
+
+        public Type ElementType
+        {
+            get { return source.ElementType; }
+        }
+
+        public Expression Expression
+        {
+            get { return _Expression; }
+        }
+
+        public IQueryProvider Provider
+        {
+            get { return source.Provider; }
+        }
+
+        public System.Collections.IEnumerator GetEnumerator()
+        {
+            return source.GetEnumerator();
+        }
+    }
+
     public class LinearQueryable<T> : IQueryable, IQueryable<T>,IEnumerable<T>
     {
 
@@ -22,6 +70,7 @@ namespace artfulplace.Linear
             this._expression = expr;
         }
 
+        
         private IQueryable<T> source { get; set; }
 
         public Type ElementType
@@ -59,5 +108,7 @@ namespace artfulplace.Linear
         {
             return source.GetEnumerator();
         }
+
+      
     }
 }

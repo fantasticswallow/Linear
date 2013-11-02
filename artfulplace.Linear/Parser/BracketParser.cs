@@ -149,6 +149,10 @@ namespace artfulplace.Linear.Core
                     throw new InvalidOperationException("Parse Error : " + _ + "の数が一致しません。");
                 }
             });
+            if (infoStack.Count == 0)
+            {
+                return null;
+            }
             var ci = infoStack.Pop();
             if (ci.Result == target)
             {

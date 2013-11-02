@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
+using System.Reflection;
 using artfulplace.Linear.Linq;
 
 namespace artfulplace.Linear.Lambda
@@ -161,7 +162,11 @@ namespace artfulplace.Linear.Lambda
                                     switch (i.Type)
                                     {
                                         case Core.MethodInfo.MethodType.Method:
-                                            var exprs = i.Args.Select(_ => Expression.Constant(_.GetValue(),_.GetType2())).ToArray();
+                                            Expression[] exprs = null;
+                                            if (i.Args != null)
+                                            {
+                                                exprs = i.Args.Select(_ => Expression.Constant(_.GetValue(),_.GetType2())).ToArray();
+                                            }
                                             expr = Expression.Call(expr, i.Name, i.GetArgumentTypes(), exprs);
                                             break;
                                         case Core.MethodInfo.MethodType.Property:
@@ -208,7 +213,18 @@ namespace artfulplace.Linear.Lambda
                 case ExpressionParser.OperatorKind.ModuloAssign:
                     return Expression.ModuloAssign(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
                 case ExpressionParser.OperatorKind.Add:
-                    return Expression.AddAssign(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
+                    var addExpr1 = GenerateExpression(info.Expression1,args);
+                    var addExpr2 = GenerateExpression(info.Expression2,args);
+                    if (info.ConstantType == Core.ArgumentInfo.ArgumentType.String)
+                    {
+                        var concatMethod = typeof(string).GetRuntimeMethod("Concat", new Type[] { typeof(string), typeof(string) });
+                        return Expression.Call(concatMethod, addExpr1, addExpr2);
+                    }
+                    else
+                    {
+                        return Expression.Add(addExpr1, addExpr2);
+                    }
+                    
                 case ExpressionParser.OperatorKind.Subtract:
                     return Expression.Subtract(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
                 case ExpressionParser.OperatorKind.Multiplication:
