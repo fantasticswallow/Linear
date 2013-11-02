@@ -81,6 +81,7 @@ namespace artfulplace.Linear.Lambda
         private ExpressionBasicInfo ConstantExpression(string target)
         {
             var curType = ArgumentInfo.ArgumentType.Variable;
+            target = replaceBack(target);
             if (Regex.IsMatch(target, "[0-9]+\\.[0-9]+"))
             {
                 curType = ArgumentInfo.ArgumentType.Double;
@@ -89,11 +90,15 @@ namespace artfulplace.Linear.Lambda
             {
                 curType = ArgumentInfo.ArgumentType.Integer;
             }
+            else if (Regex.IsMatch(target, "[0-9]+L"))
+            {
+                curType = ArgumentInfo.ArgumentType.Integer;
+            }
             else if (Regex.IsMatch(target, "^(true|false)", RegexOptions.IgnoreCase))
             {
                 curType = ArgumentInfo.ArgumentType.Boolean;
             }
-            else if (target.Contains("."))
+            else if ((target.Contains(".")) || (target.Contains("(")))
             {
                 curType = ArgumentInfo.ArgumentType.Method;
             }

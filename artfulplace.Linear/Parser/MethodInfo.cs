@@ -12,12 +12,17 @@ namespace artfulplace.Linear.Core
         internal BracketParseInfo BracketInfo { get; set; }
         internal enum MethodType
         {
+            PropertyOrField,
             Property,
             Method
         }
         internal MethodType Type { get; set; }
         internal string baseStr { get; set; }
 
+        internal Type[] GetArgumentTypes()
+        {
+            return this.Args.Select(_ => _.GetType2()).ToArray();
+        }
     }
 
     internal class ArgumentInfo
@@ -28,11 +33,13 @@ namespace artfulplace.Linear.Core
             String,
             Char,
             Integer,
+            Long,
             Double,
             Boolean,
             Lambda,
             Variable,
             Method
+            
         }
         internal ArgumentType Type { get; set; }
         internal BracketParseInfo BracketInfo { get; set; }
@@ -42,6 +49,8 @@ namespace artfulplace.Linear.Core
             {
                 case Core.ArgumentInfo.ArgumentType.Integer:
                     return int.Parse(this.Value);
+                case Core.ArgumentInfo.ArgumentType.Long:
+                    return long.Parse(this.Value);
                 case Core.ArgumentInfo.ArgumentType.Double:
                     return double.Parse(this.Value);
                 case Core.ArgumentInfo.ArgumentType.Boolean:
@@ -52,6 +61,27 @@ namespace artfulplace.Linear.Core
                     return null;
             }
         }
+
+        internal Type GetType2()
+        {
+            switch (this.Type)
+            {
+                case ArgumentInfo.ArgumentType.Boolean:
+                    return typeof(bool);
+                case ArgumentInfo.ArgumentType.String:
+                    return typeof(string);
+                case ArgumentInfo.ArgumentType.Double:
+                    return typeof(double);
+                case ArgumentInfo.ArgumentType.Long:
+                    return typeof(long);
+                case ArgumentInfo.ArgumentType.Integer:
+                    return typeof(int);
+                default:
+                    return null;
+            }
+        }
+
+        
 
     }
 }

@@ -56,7 +56,7 @@ namespace artfulplace.Linear.Core
                 {
                     info.Name = _;
                 }
-                info.Type = MethodInfo.MethodType.Property;
+                info.Type = MethodInfo.MethodType.PropertyOrField;
                 info.baseStr = _;
                 return info;
             }).ToArray();
@@ -72,6 +72,10 @@ namespace artfulplace.Linear.Core
                         if (x.Type == BracketParseInfo.InfoType.Round)
                         {
                             _.Type = MethodInfo.MethodType.Method;
+                        }
+                        else if (x.Type == BracketParseInfo.InfoType.Square)
+                        {
+                            _.Type = MethodInfo.MethodType.Property;
                         }
 
                         if (!(String.IsNullOrEmpty(x.Capture)))

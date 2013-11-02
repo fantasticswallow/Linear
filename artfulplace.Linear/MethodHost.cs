@@ -52,8 +52,10 @@ namespace artfulplace.Linear
                                         return typeof(string);
                                     case ArgumentInfo.ArgumentType.Double:
                                         return typeof(double);
-                                    default:
+                                    case ArgumentInfo.ArgumentType.Integer:
                                         return typeof(int);
+                                    default:
+                                        return null;
                                 }   
                             }).ToArray();
                             args = i.Args.Select(_ => _.GetValue()).ToArray();

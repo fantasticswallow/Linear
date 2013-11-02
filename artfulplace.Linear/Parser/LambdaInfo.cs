@@ -11,6 +11,7 @@ namespace artfulplace.Linear.Lambda
         internal LambdaArgumentInfo[] Arguments { get; set; }
         internal IEnumerable<ExpressionBasicInfo> Expressions { get; set; }
         internal Core.BracketParseInfo BracketInfo { get; set; }
+        internal Type ReturnType { get; set; }
     }
 
     internal class LambdaArgumentInfo

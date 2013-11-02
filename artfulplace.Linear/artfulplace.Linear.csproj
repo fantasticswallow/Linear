@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LambdaBase.cs" />
+    <Compile Include="LinearQueryable.cs" />
     <Compile Include="LinqMethod.cs" />
     <Compile Include="LinqMethodBase.cs">
       <AutoGen>True</AutoGen>
@@ -58,6 +59,7 @@
     <Compile Include="Parser\ExpressionParser.cs" />
     <Compile Include="Parser\LambdaInfo.cs" />
     <Compile Include="Parser\LambdaParser.cs" />
+    <Compile Include="Parser\MethodBuilder.cs" />
     <Compile Include="Parser\MethodInfo.cs" />
     <Compile Include="Parser\MethodParser.cs" />
     <Compile Include="Parser\MethodSpliter.cs" />

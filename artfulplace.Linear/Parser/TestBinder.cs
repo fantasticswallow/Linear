@@ -130,11 +130,51 @@ namespace artfulplace.Linear
 
         public static List<String> LambdaExpressionDynamicTest(IQueryable<int> source, string target)
         {
+            var source3 = new LinearQueryable<int>(source);
+            var info = MethodParser.MethodParse(target);
+            var li = info.First().Args.First();
+            var linfo = LambdaParser.Parse(li.Value, li.BracketInfo);
+            var expr = ExpressionBuilder.DynamicBuild(linfo,new Type[] {typeof(int),typeof(bool)});
+            
+            // EnumerableQueryだとIE<>が評価されてしまうのでLinearQueryableで評価させることでIQ<>を入れる
+            var sourceExpr = Expression.Constant(source3, source3.GetType());
+            var resExpr = Expression.Call(typeof(Queryable), "Where", new Type[] { typeof(int) }, sourceExpr, expr);
+            var source2 = new LinearQueryable<int>(source, resExpr);
+            var res = (IEnumerable<int>)(source.Provider.Execute<IQueryable<int>>(resExpr));
+            
+            retList = new List<string>();
+            res.ForEach(x => retList.Add(x.ToString()));
+            return retList;
+        }
+
+
+        public static List<String> LambdaExpressionDynamicTest2(IQueryable<int> source, string target)
+        {
 
             var res = MethodHost.Invoke<int>(source, target);
+            
 
             retList = new List<string>();
             res.ForEach(x => retList.Add(x.ToString()));
+            return retList;
+        }
+
+        public static List<String> LambdaExpressionDynamicTest3(IQueryable<int> source, string target)
+        {
+
+            var source3 = new LinearQueryable<int>(source);
+            var info = MethodParser.MethodParse(target);
+            IQueryable<string> res;
+            Expression sourceCache;
+            sourceCache = Expression.Constant(source3, source3.GetType());
+            info.ForEach(_ =>
+            {
+                
+            });
+
+
+            retList = new List<string>();
+            res.ForEach(x => retList.Add(x));
             return retList;
         }
 

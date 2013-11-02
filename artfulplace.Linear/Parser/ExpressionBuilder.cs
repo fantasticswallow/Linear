@@ -71,11 +71,10 @@ namespace artfulplace.Linear.Lambda
             return Expression.Parameter(t, info.Name);
         }
 
-        internal static Expression DynamicBuild(LambdaInfo info,Type[] args)
+        internal static LambdaExpression DynamicBuild(LambdaInfo info,Type[] args)
         {
             var args2 = new List<ParameterExpression>();
             info.Arguments.ForEach((x, idx) => args2.Add(argExpressionDynamic(x,args[idx])));
-            
             var args3 = args2.ToList();
             var expr = GenerateExpression(info.Expressions.First(), args3);
             return Expression.Lambda(expr, args2);
@@ -105,19 +104,28 @@ namespace artfulplace.Linear.Lambda
             {
                 case ExpressionParser.OperatorKind.Constant:
                     object val = null;
+                    Type t = null;
                     switch (info.ConstantType)
                     {
                         case Core.ArgumentInfo.ArgumentType.Integer:
                             val = int.Parse(info.ExpressionString1);
+                            t = typeof(int);
+                            break;
+                        case Core.ArgumentInfo.ArgumentType.Long:
+                            val = long.Parse(info.ExpressionString1);
+                            t = typeof(long);
                             break;
                         case Core.ArgumentInfo.ArgumentType.Double:
                             val = double.Parse(info.ExpressionString1);
+                            t = typeof(double);
                             break;
                         case Core.ArgumentInfo.ArgumentType.Boolean:
                             val = bool.Parse(info.ExpressionString1);
+                            t = typeof(bool);
                             break;
                         case Core.ArgumentInfo.ArgumentType.String:
                             val = info.ExpressionString1;
+                            t = typeof(string);
                             break;
                         case Core.ArgumentInfo.ArgumentType.Variable:
                             if (args.Any(x => x.Name == info.ExpressionString1))
@@ -127,13 +135,50 @@ namespace artfulplace.Linear.Lambda
                             else
                             {
                                 var sp = info.ExpressionString1.Split(' ');
-                                var t = Type.GetType(sp[0]);
-                                var param = Expression.Parameter(t,sp[1]);
+                                var t2 = Type.GetType(sp[0]);
+                                var param = Expression.Parameter(t2,sp[1]);
                                 args.Add(param);
                                 return param;
                             }
+                        case Core.ArgumentInfo.ArgumentType.Method:
+                            var ms = Core.MethodParser.MethodParse(info.ExpressionString1).ToArray();
+                            Expression expr = null;
+                            foreach (var i in ms)
+                            {
+                                if (expr == null)
+                                {
+                                    if (args.Any(x => x.Name == i.Name))
+                                    {
+                                        expr = args.Find(x => x.Name == i.Name);
+                                    }
+                                    else // 公開されたメソッドとの対応を行えるようにする
+                                    {
+
+                                    }
+                                }
+                                else
+                                {
+                                    switch (i.Type)
+                                    {
+                                        case Core.MethodInfo.MethodType.Method:
+                                            var exprs = i.Args.Select(_ => Expression.Constant(_.GetValue(),_.GetType2())).ToArray();
+                                            expr = Expression.Call(expr, i.Name, i.GetArgumentTypes(), exprs);
+                                            break;
+                                        case Core.MethodInfo.MethodType.Property:
+                                            var exprs2 = i.Args.Select(_ => Expression.Constant(_.GetValue(),_.GetType2())).ToArray();
+                                            expr = Expression.Property(expr,i.Name,exprs2);
+                                            break;
+                                        case Core.MethodInfo.MethodType.PropertyOrField:
+                                            expr = Expression.PropertyOrField(expr,i.Name);
+                                            break;
+                                    }                                    
+                                }
+                                
+                            }
+                            return expr;
+                            
                     }
-                    return Expression.Constant(val);
+                    return Expression.Constant(val,t);
                 case ExpressionParser.OperatorKind.And:
                     return Expression.AndAlso(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
                 case ExpressionParser.OperatorKind.Or:

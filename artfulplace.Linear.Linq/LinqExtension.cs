@@ -171,7 +171,7 @@ namespace artfulplace.Linear.Linq
         /// <returns></returns>
         public static bool IsNotEmpty<T>(this IEnumerable<T> source)
         {
-            return source != null && source.Count2() > 0;
+            return source != null && source.Count() > 0;
         }
 
         /// <summary>
