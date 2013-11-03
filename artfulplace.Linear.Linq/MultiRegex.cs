@@ -27,6 +27,21 @@ namespace artfulplace.Linear.RegexExtension
             Xor
         }
 
+        public static bool IsMatchAnd(string input, string pattern1, string pattern2)
+        {
+            return IsMatchDouble(input, pattern1, pattern2,MergeOperater.And);
+        }
+
+        public static bool IsMatchNot(string input, string pattern1, string pattern2)
+        {
+            return IsMatchDouble(input, pattern1, pattern2, MergeOperater.Not);
+        }
+
+        public static bool IsMatchXor(string input, string pattern1, string pattern2)
+        {
+            return IsMatchDouble(input, pattern1, pattern2, MergeOperater.Xor);
+        }
+
         /// <summary>
         /// 二つのパターンを用いた正規表現の判定を行います
         /// </summary>

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace artfulplace.Linear.Core
 {
-    internal class MethodInfo
+    public class MethodInfo
     {
         internal string Name { get; set; }
         internal IEnumerable<ArgumentInfo> Args { get; set; }
@@ -52,15 +52,15 @@ namespace artfulplace.Linear.Core
             switch (this.Type)
             {
                 case Core.ArgumentInfo.ArgumentType.Integer:
-                    return int.Parse(this.Value);
+                    return int.Parse(this.Value.Trim());
                 case Core.ArgumentInfo.ArgumentType.Long:
-                    return long.Parse(this.Value);
+                    return long.Parse(this.Value.Trim());
                 case Core.ArgumentInfo.ArgumentType.Double:
-                    return double.Parse(this.Value);
+                    return double.Parse(this.Value.Trim());
                 case Core.ArgumentInfo.ArgumentType.Boolean:
-                    return bool.Parse(this.Value);
+                    return bool.Parse(this.Value.Trim());
                 case Core.ArgumentInfo.ArgumentType.String:
-                    return this.Value;
+                    return this.Value.Trim();
                 default :
                     return null;
             }

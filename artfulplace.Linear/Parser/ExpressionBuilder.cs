@@ -154,7 +154,11 @@ namespace artfulplace.Linear.Lambda
                                     }
                                     else // 公開されたメソッドとの対応を行えるようにする
                                     {
-
+                                        expr = StandardExntensionMethods.GetStandardExpression(i, args);
+                                        if (expr == null)
+                                        {
+                                            throw new ArgumentException(string.Format("メソッド名 {0} に対応するメソッドは共通メソッドで定義されていません", i.Name));
+                                        }
                                     }
                                 }
                                 else

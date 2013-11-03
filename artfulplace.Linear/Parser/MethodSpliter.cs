@@ -124,6 +124,10 @@ namespace artfulplace.Linear.Core
                 {
                     info.Type = ArgumentInfo.ArgumentType.Boolean;
                 }
+                else if (_.Contains(".") || (_.Contains("(")))
+                {
+                    info.Type = ArgumentInfo.ArgumentType.Method;
+                }
                 else
                 {
                     info.Type = ArgumentInfo.ArgumentType.Variable;

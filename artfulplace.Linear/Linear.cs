@@ -19,14 +19,18 @@ namespace artfulplace.Linear
         {
             this.IsSafeMode = true;
             this.MemoriedCollection = new Dictionary<string, IEnumerable>();
-            this.ExtensionMethodCollection = new Dictionary<string, Delegate>();
+            this.ExtendExpressionCollection = new Dictionary<string, Expression>();
+            this.ExpressionCompileCollection = new Dictionary<string, Func<MethodInfo, List<ParameterExpression>, Expression>>();
+            builder.LinearReference = this;
         }
 
         public Linear(bool safeMode)
         {
             this.IsSafeMode = safeMode;
             this.MemoriedCollection = new Dictionary<string, IEnumerable>();
-            this.ExtensionMethodCollection = new Dictionary<string, Delegate>();
+            this.ExtendExpressionCollection = new Dictionary<string, Expression>();
+            this.ExpressionCompileCollection = new Dictionary<string, Func<MethodInfo, List<ParameterExpression>, Expression>>();
+            builder.LinearReference = this;
         }
 
         /// <summary>
@@ -34,7 +38,10 @@ namespace artfulplace.Linear
         /// </summary>
         public bool IsSafeMode { get; private set; }
 
-        public Dictionary<string, Delegate> ExtensionMethodCollection { get; set; }
+        public Dictionary<string, Expression> ExtendExpressionCollection { get; set; }
+        public Dictionary<string, Func<MethodInfo,List<ParameterExpression>,Expression>> ExpressionCompileCollection { get; set; }
+
+        private artfulplace.Linear.Lambda.ExpressionBuilder2 builder = new artfulplace.Linear.Lambda.ExpressionBuilder2();
 
         /// <summary>
         /// Collection References to Use From Collection 
@@ -130,11 +137,11 @@ namespace artfulplace.Linear
                 if (idx == 0)
                 {
                     // FromではGenericArgumentsTypeが取れないので別に与える
-                    sourceCache = MethodBuilder.MethodBuild(sourceCache, _, xt);
+                    sourceCache = MethodBuilder.MethodBuild(sourceCache, _, xt,builder);
                 }
                 else 
                 {
-                    sourceCache = MethodBuilder.MethodBuild(sourceCache, _);
+                    sourceCache = MethodBuilder.MethodBuild(sourceCache, _, builder);
                 }
             });
             var source2 = new LinearQueryable(source1, sourceCache);

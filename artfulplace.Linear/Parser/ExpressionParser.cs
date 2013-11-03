@@ -327,6 +327,7 @@ namespace artfulplace.Linear.Lambda
             And,
             Or,
             Not,
+            ExclusiveOr,
 
             // equals operator
             Equals,
@@ -350,6 +351,7 @@ namespace artfulplace.Linear.Lambda
             Multiplication,
             Division,
             Modulo,
+            Power,
 
             // others (contains not use)
             String,

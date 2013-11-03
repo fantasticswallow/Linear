@@ -23,12 +23,15 @@ namespace TestConsole
             var test7 = "Skip(15)";
             var test8 = "Where(_ => _ % 5 == 0).Select(_ => _.ToString() + \"hoge\")";
             var test9 = "Where(_ => _ % 5 == 0).Select(_ => _ + 2).Select(_ => _.ToString() + \"hoge\")";
+            var test9_2 = "Where(_ => _ % 5 == 0).Select(_ => (_ + 2).ToString() + \"hoge\")";
             var test10 = "From(\"Range1\").Where(_ => _ % 5 == 0).Select(_ => _ + 2).Select(_ => _.ToString() + \"hoge\")";
             var test11 = "From(\"Range2\").Where(_ => _ % 5 == 0).Select(_ => _ + 2).Select(_ => _.ToString() + \"hoge\")";
             var test12 = "From(\"TestData1\").Where(_ => _.Lv > 45).OrderByDescending(_ => _.Lv).Take(5)";
             var test13 = "From(\"TestData1\").Reverse()";
             var test14 = "From(SourceReference(testData1.GetData())).OrderByDescending(_ => _.Lv).GroupBy(_ => _.ShipType)";
             var test15 = "From($SR(testData1.GetData())).Reverse()";
+            var test16 = "From($SR(testData1.GetData())).Select(_ => _.ShipType.ToLower().ToUpper().ToLower())";
+            var test17 = "From(SourceReference(testData1.GetData())).Where(_ => RegexIsMatch(_.ShipType, \"(BattleShip|Aircraft)\"))";
             //var list = TestBinder.MethodParseTest(test);
             //list.ForEach(_ => Console.WriteLine(_));
             var curLinear = new Linear(false);
@@ -48,9 +51,10 @@ namespace TestConsole
             //obj2.ForEach(x => Console.WriteLine(string.Format("{0} : {1} : {2}",x.Name ,x.Lv.ToString(),x.ShipType)));
             //Console.WriteLine("");
             //Console.WriteLine("");
-            Console.WriteLine(test15);
+            Console.WriteLine(test17);
             Console.WriteLine("");
-            var obj3 = curLinear.GetResult<testData1>(test15);
+            var obj3 = curLinear.GetResult<testData1>(test17);
+            // obj3.ForEach(x => Console.WriteLine(x));
             obj3.ForEach(x => Console.WriteLine(string.Format("{0} : {1} : {2}", x.Name, x.Lv.ToString(), x.ShipType)));
             //obj3.ForEach(x => {
             //    Console.WriteLine(x.Key + " => ");
