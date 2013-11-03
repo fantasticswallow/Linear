@@ -26,33 +26,37 @@ namespace TestConsole
             var test10 = "From(\"Range1\").Where(_ => _ % 5 == 0).Select(_ => _ + 2).Select(_ => _.ToString() + \"hoge\")";
             var test11 = "From(\"Range2\").Where(_ => _ % 5 == 0).Select(_ => _ + 2).Select(_ => _.ToString() + \"hoge\")";
             var test12 = "From(\"TestData1\").Where(_ => _.Lv > 45).OrderByDescending(_ => _.Lv).Take(5)";
-            var test13 = "From(\"TestData1\").OrderByDescending(_ => _.Lv).GroupBy(_ => _.ShipType)";
+            var test13 = "From(\"TestData1\").Reverse()";
+            var test14 = "From(SourceReference(testData1.GetData())).OrderByDescending(_ => _.Lv).GroupBy(_ => _.ShipType)";
+            var test15 = "From($SR(testData1.GetData())).Reverse()";
             //var list = TestBinder.MethodParseTest(test);
             //list.ForEach(_ => Console.WriteLine(_));
-            var curLinear = new Linear();
-            curLinear.MemoriedCollection.Add("Range1", Enumerable.Range(12, 100000));
-            curLinear.MemoriedCollection.Add("Range2", Enumerable.Range(110, 15));
-            curLinear.MemoriedCollection.Add("TestData1", testData1.GetData());
-            Console.WriteLine(test10);
+            var curLinear = new Linear(false);
+            curLinear.CallingAssembly = System.Reflection.Assembly.GetExecutingAssembly();
+            curLinear.AddCollection("Range1", Enumerable.Range(12, 100));
+            curLinear.AddCollection("Range2", Enumerable.Range(110, 15));
+            curLinear.AddCollection("TestData1", testData1.GetData());
+            //Console.WriteLine(test10);
+            //Console.WriteLine("");
+            //var obj = curLinear.GetResult<string>(test10);
+            //obj.ForEach(x => Console.WriteLine(x));
+            //Console.WriteLine("");
+            //Console.WriteLine("");
+            //Console.WriteLine(test12);
+            //Console.WriteLine("");
+            //var obj2 = curLinear.GetResult<testData1>(test12);
+            //obj2.ForEach(x => Console.WriteLine(string.Format("{0} : {1} : {2}",x.Name ,x.Lv.ToString(),x.ShipType)));
+            //Console.WriteLine("");
+            //Console.WriteLine("");
+            Console.WriteLine(test15);
             Console.WriteLine("");
-            var obj = curLinear.GetResult<string>(test10);
-            obj.ForEach(x => Console.WriteLine(x));
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine(test12);
-            Console.WriteLine("");
-            var obj2 = curLinear.GetResult<testData1>(test12);
-            obj2.ForEach(x => Console.WriteLine(string.Format("{0} : {1} : {2}",x.Name ,x.Lv.ToString(),x.ShipType)));
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine(test13);
-            Console.WriteLine("");
-            var obj3 = curLinear.GetResult<IGrouping<string,testData1>>(test13);
-            obj3.ForEach(x => {
-                Console.WriteLine(x.Key + " => ");
-                x.ForEach(x2 => Console.WriteLine(string.Format("{0} : {1} : {2}", x2.Name, x2.Lv.ToString(), x2.ShipType)));
-                Console.WriteLine("");
-            });
+            var obj3 = curLinear.GetResult<testData1>(test15);
+            obj3.ForEach(x => Console.WriteLine(string.Format("{0} : {1} : {2}", x.Name, x.Lv.ToString(), x.ShipType)));
+            //obj3.ForEach(x => {
+            //    Console.WriteLine(x.Key + " => ");
+            //    x.ForEach(x2 => Console.WriteLine(string.Format("{0} : {1} : {2}", x2.Name, x2.Lv.ToString(), x2.ShipType)));
+            //    Console.WriteLine("");
+            //});
         }
 
         

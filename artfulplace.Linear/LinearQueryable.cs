@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace artfulplace.Linear
 {
 
-    public class LinearQueryable : IQueryable
+    internal class LinearQueryable : IQueryable
     {
         public static IQueryable CreateFromExpr(Expression expr)
         {
@@ -55,7 +55,7 @@ namespace artfulplace.Linear
         }
     }
 
-    public class LinearQueryable<T> : IQueryable, IQueryable<T>,IEnumerable<T>
+    internal class LinearQueryable<T> : IQueryable, IQueryable<T>,IEnumerable<T>
     {
 
         public LinearQueryable(IQueryable<T> _source)

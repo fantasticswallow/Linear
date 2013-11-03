@@ -18,11 +18,16 @@ namespace artfulplace.Linear.Core
         internal static Expression MethodBuild(Expression source, MethodInfo info)
         {
             var t2 = new List<Type>();
+            t2.Add(source.Type.GenericTypeArguments.First());
+            if (info.Args == null)
+            {
+                var ms3 = typeof(Queryable).GetRuntimeMethod(info.Name,new Type[0]);
+                return Expression.Call(typeof(Queryable), info.Name, t2.ToArray(), source);
+            }
             var iArgs = info.Args.Count() + 1;
             var ms2 = typeof(Queryable).GetRuntimeMethods().Where(x => (x.Name == info.Name) && (x.GetParameters().Length == iArgs)).ToArray();
             var msGenArgs = ms2[0].GetGenericArguments().Length;
-            t2.Add(source.Type.GenericTypeArguments.First());
-
+            
             var exprs = info.Args.Select((_, idx) =>
                 {
                     switch (_.Type)
@@ -85,11 +90,16 @@ namespace artfulplace.Linear.Core
         internal static Expression MethodBuild(Expression source, MethodInfo info,Type sourceType)
         {
             var t2 = new List<Type>();
+            t2.Add(sourceType);
+            if (info.Args == null)
+            {
+                var ms3 = typeof(Queryable).GetRuntimeMethod(info.Name, new Type[0]);
+                return Expression.Call(typeof(Queryable), info.Name, t2.ToArray(), source);
+            }
             var iArgs = info.Args.Count() + 1;
             var ms2 = typeof(Queryable).GetRuntimeMethods().Where(x => (x.Name == info.Name) && (x.GetParameters().Length == iArgs)).ToArray();
             var msGenArgs = ms2[0].GetGenericArguments().Length;
-            t2.Add(sourceType);
-
+            
             var exprs = info.Args.Select((_, idx) =>
                 {
                     switch (_.Type)

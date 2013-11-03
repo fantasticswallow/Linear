@@ -148,16 +148,16 @@ namespace artfulplace.Linear
         }
 
 
-        public static List<String> LambdaExpressionDynamicTest2(IQueryable<int> source, string target)
-        {
+        //public static List<String> LambdaExpressionDynamicTest2(IQueryable<int> source, string target)
+        //{
 
-            var res = MethodHost.Invoke<int>(source, target);
+        //    var res = MethodHost.Invoke<int>(source, target);
             
 
-            retList = new List<string>();
-            res.ForEach(x => retList.Add(x.ToString()));
-            return retList;
-        }
+        //    retList = new List<string>();
+        //    res.ForEach(x => retList.Add(x.ToString()));
+        //    return retList;
+        //}
 
         public static List<String> LambdaExpressionDynamicTest3<T>(IQueryable<T> source, string target)
         {

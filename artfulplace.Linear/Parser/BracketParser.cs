@@ -137,6 +137,10 @@ namespace artfulplace.Linear.Core
                     }
                     isLast = false;
                     curInfo.Result = cur.Replace("\\\"","\"");
+                    if (curInfo.Children != null)
+                    {
+                        curInfo.Children.Reverse();
+                    }
                     infoStack.Push(curInfo);
                     parseStack.Push(cur);
                 }
@@ -165,6 +169,7 @@ namespace artfulplace.Linear.Core
                 info.Children = new List<BracketParseInfo>();
                 info.Children.Add(ci);
                 infoStack.ForEach(_ => info.Children.Add(_));
+                info.Children.Reverse();
                 return info;
             }
         }
@@ -297,7 +302,14 @@ namespace artfulplace.Linear.Core
                     }
 
                     curInfo.Result = cur.Replace("\\\"", "\"");
-                    infoStack.Push(curInfo);
+                    if (curInfo.Children != null)
+                    {
+                        curInfo.Children.Reverse();
+                    }
+                    if (curInfo.Children != null)
+                    {
+                        curInfo.Children.Reverse();
+                    } infoStack.Push(curInfo);
                     parseStack.Push(cur);
                 }
 
@@ -330,6 +342,7 @@ namespace artfulplace.Linear.Core
                 info.Children = new List<BracketParseInfo>();
                 info.Children.Add(ci);
                 infoStack.ForEach(_ => info.Children.Add(_));
+                info.Children.Reverse();
                 return info;
             }
         }

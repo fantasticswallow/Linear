@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace TestConsole
 {
-    internal class testData1
+    public class testData1
     {
-        internal string Name { get; set; }
-        internal int Lv { get; set; }
-        internal string ShipType { get; set; }
+        public string Name { get; set; }
+        public int Lv { get; set; }
+        public string ShipType { get; set; }
 
 
-        internal static IEnumerable<testData1> GetData()
+        public static IEnumerable<testData1> GetData()
         {
             var l = new List<testData1>();
             l.Add(testData1.Create("Fubuki", 65, "Destroyer"));
