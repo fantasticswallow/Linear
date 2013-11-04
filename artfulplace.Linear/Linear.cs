@@ -58,7 +58,7 @@ namespace artfulplace.Linear
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        internal IEnumerable From(string name)
+        private IEnumerable From(string name)
         {
             var name2 = name;
             if (MemoriedCollection.ContainsKey(name2))
@@ -71,7 +71,7 @@ namespace artfulplace.Linear
             }
         }
 
-        internal IEnumerable From(SourceReference refer)
+        private IEnumerable From(SourceReference refer)
         {
             return refer.Result(this.IsSafeMode);
         }
@@ -146,6 +146,66 @@ namespace artfulplace.Linear
             });
             var source2 = new LinearQueryable(source1, sourceCache);
             return (IEnumerable<T>)source2.Provider.Execute(sourceCache);
+        }
+
+        public bool ElementIs<T>(T obj,string source)
+        {
+            var bParser = new BracketParser();
+            var info = LambdaParser.Parse(source,bParser.Parse(source));
+            var expr = builder.DynamicBuild(info, new Type[] { typeof(T) });
+            var dele = (Func<T,bool>)expr.Compile();
+            return dele.Invoke(obj);
+        }
+
+        public TResult ElementTo<T,TResult>(T obj, string source)
+        {
+            var bParser = new BracketParser();
+            var info = LambdaParser.Parse(source, bParser.Parse(source));
+            var expr = builder.DynamicBuild(info, new Type[] { typeof(T) });
+            var dele = (Func<T, TResult>)expr.Compile();
+            return dele.Invoke(obj);
+        }
+
+        /// <summary>
+        /// Get Applied text query Element from Linear Object.
+        /// </summary>
+        /// <typeparam name="T">Result Type</typeparam>
+        /// <param name="target">Text Query to apply collection</param>
+        /// <returns></returns>
+        public T GetElement<T>(string target)
+        {
+            var info = MethodParser.MethodParse(target).ToArray();
+            var colInfo = info[0];
+            IEnumerable col;
+            switch (colInfo.Name)
+            {
+                case "From":
+                    col = FromResolver(colInfo);
+                    break;
+                default:
+                    throw new ArgumentException("Collectionが指定されていません。クエリの最初は From(string),または From(SourceReference(Method)) から始める必要があります。");
+
+            }
+            var source1 = col.AsQueryable();
+            var xt = source1.GetType().GenericTypeArguments.First();
+            var gent = typeof(LinearQueryable<>).MakeGenericType(xt);
+            var source3 = (IQueryable)Activator.CreateInstance(gent, source1);
+            Expression sourceCache;
+            sourceCache = Expression.Constant(source3, gent);
+            info.Skip(1).ForEach((_, idx) =>
+            {
+                if (idx == 0)
+                {
+                    // FromではGenericArgumentsTypeが取れないので別に与える
+                    sourceCache = MethodBuilder.MethodBuild(sourceCache, _, xt, builder);
+                }
+                else
+                {
+                    sourceCache = MethodBuilder.MethodBuild(sourceCache, _, builder);
+                }
+            });
+            var source2 = new LinearQueryable(source1, sourceCache);
+            return (T)source2.Provider.Execute(sourceCache);
         }
 
         /// <summary>

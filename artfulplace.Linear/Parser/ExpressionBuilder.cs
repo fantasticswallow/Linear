@@ -11,39 +11,39 @@ namespace artfulplace.Linear.Lambda
 {
     internal class ExpressionBuilder
     {
-        internal static Expression<Func<TResult>> Build<TResult>(LambdaInfo info)
-        {
-            // var args = new List<ParameterExpression>();
-            // args.Add(argExpression<TArg>(info.Arguments[0]));
-            // var args2 = args.ToList();
-            return Expression.Lambda<Func<TResult>>(GenerateExpression(info.Expressions.First(), null),null);
-        }
+        //internal static Expression<Func<TResult>> Build<TResult>(LambdaInfo info)
+        //{
+        //    // var args = new List<ParameterExpression>();
+        //    // args.Add(argExpression<TArg>(info.Arguments[0]));
+        //    // var args2 = args.ToList();
+        //    return Expression.Lambda<Func<TResult>>(GenerateExpression(info.Expressions.First(), null),null);
+        //}
 
-        internal static Expression<Func<TArg, TResult>> Build<TArg, TResult>(LambdaInfo info)
-        {
-            var args = new List<ParameterExpression>();
-            args.Add(argExpression<TArg>(info.Arguments[0]));
-            var args2 = args.ToList();
-            return Expression.Lambda<Func<TArg, TResult>>(GenerateExpression(info.Expressions.First(), args2), args);
-        }
-        internal static Expression<Func<T1,T2, TResult>> Build<T1,T2, TResult>(LambdaInfo info)
-        {
-            var args = new List<ParameterExpression>();
-            args.Add(argExpression<T1>(info.Arguments[0]));
-            args.Add(argExpression<T2>(info.Arguments[1]));
-            var args2 = args.ToList();
-            return Expression.Lambda<Func<T1,T2, TResult>>(GenerateExpression(info.Expressions.First(), args2), args);
-        }
+        //internal static Expression<Func<TArg, TResult>> Build<TArg, TResult>(LambdaInfo info)
+        //{
+        //    var args = new List<ParameterExpression>();
+        //    args.Add(argExpression<TArg>(info.Arguments[0]));
+        //    var args2 = args.ToList();
+        //    return Expression.Lambda<Func<TArg, TResult>>(GenerateExpression(info.Expressions.First(), args2), args);
+        //}
+        //internal static Expression<Func<T1,T2, TResult>> Build<T1,T2, TResult>(LambdaInfo info)
+        //{
+        //    var args = new List<ParameterExpression>();
+        //    args.Add(argExpression<T1>(info.Arguments[0]));
+        //    args.Add(argExpression<T2>(info.Arguments[1]));
+        //    var args2 = args.ToList();
+        //    return Expression.Lambda<Func<T1,T2, TResult>>(GenerateExpression(info.Expressions.First(), args2), args);
+        //}
 
-        internal static Expression<Func<T1, T2, T3, TResult>> Build<T1, T2, T3, TResult>(LambdaInfo info)
-        {
-            var args = new List<ParameterExpression>();
-            args.Add(argExpression<T1>(info.Arguments[0]));
-            args.Add(argExpression<T2>(info.Arguments[1]));
-            args.Add(argExpression<T3>(info.Arguments[2]));
-            var args2 = args.ToList();
-            return Expression.Lambda<Func<T1, T2, T3, TResult>>(GenerateExpression(info.Expressions.First(), args2), args);
-        }
+        //internal static Expression<Func<T1, T2, T3, TResult>> Build<T1, T2, T3, TResult>(LambdaInfo info)
+        //{
+        //    var args = new List<ParameterExpression>();
+        //    args.Add(argExpression<T1>(info.Arguments[0]));
+        //    args.Add(argExpression<T2>(info.Arguments[1]));
+        //    args.Add(argExpression<T3>(info.Arguments[2]));
+        //    var args2 = args.ToList();
+        //    return Expression.Lambda<Func<T1, T2, T3, TResult>>(GenerateExpression(info.Expressions.First(), args2), args);
+        //}
 
         private static ParameterExpression argExpression<TArg>(LambdaArgumentInfo info)
         {
@@ -216,6 +216,8 @@ namespace artfulplace.Linear.Lambda
                     return Expression.DivideAssign(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
                 case ExpressionParser.OperatorKind.ModuloAssign:
                     return Expression.ModuloAssign(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
+                case ExpressionParser.OperatorKind.PowerAssign:
+                    return Expression.PowerAssign(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
                 case ExpressionParser.OperatorKind.Add:
                     var addExpr1 = GenerateExpression(info.Expression1,args);
                     var addExpr2 = GenerateExpression(info.Expression2,args);
@@ -237,6 +239,8 @@ namespace artfulplace.Linear.Lambda
                     return Expression.Divide(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
                 case ExpressionParser.OperatorKind.Modulo:
                     return Expression.Modulo(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
+                case ExpressionParser.OperatorKind.Power:
+                    return Expression.Power(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
                 case ExpressionParser.OperatorKind.Basic:
                     return Expression.Assign(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
             }

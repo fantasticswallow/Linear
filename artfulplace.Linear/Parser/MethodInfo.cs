@@ -7,19 +7,19 @@ namespace artfulplace.Linear.Core
 {
     public class MethodInfo
     {
-        internal string Name { get; set; }
-        internal IEnumerable<ArgumentInfo> Args { get; set; }
+        public string Name { get; set; }
+        public IEnumerable<ArgumentInfo> Args { get; set; }
         internal BracketParseInfo BracketInfo { get; set; }
-        internal enum MethodType
+        public enum MethodType
         {
             PropertyOrField,
             Property,
             Method
         }
-        internal MethodType Type { get; set; }
+        public MethodType Type { get; set; }
         internal string baseStr { get; set; }
 
-        internal Type[] GetArgumentTypes()
+        public Type[] GetArgumentTypes()
         {
             if (this.Args == null)
             {
@@ -29,10 +29,10 @@ namespace artfulplace.Linear.Core
         }
     }
 
-    internal class ArgumentInfo
+    public class ArgumentInfo
     {
-        internal string Value { get; set; }
-        internal enum ArgumentType
+        public string Value { get; set; }
+        public enum ArgumentType
         {
             String,
             Char,
@@ -45,9 +45,9 @@ namespace artfulplace.Linear.Core
             Method
             
         }
-        internal ArgumentType Type { get; set; }
+        public ArgumentType Type { get; set; }
         internal BracketParseInfo BracketInfo { get; set; }
-        internal object GetValue()
+        public object GetValue()
         {
             switch (this.Type)
             {
@@ -66,7 +66,7 @@ namespace artfulplace.Linear.Core
             }
         }
 
-        internal Type GetType2()
+        public Type GetType2()
         {
             switch (this.Type)
             {

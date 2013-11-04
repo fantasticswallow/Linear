@@ -140,6 +140,10 @@ namespace artfulplace.Linear.Lambda
             {
                 opList.Add(OperatorKind.Equals);
             }
+            if (target.Contains("=="))
+            {
+                opList.Add(OperatorKind.Equals);
+            }
             if (target.Contains("!"))
             {
                 opList.Add(OperatorKind.NotEquals);
@@ -153,16 +157,6 @@ namespace artfulplace.Linear.Lambda
             {
                 opList.Add(OperatorKind.Less);
                 opList.Add(OperatorKind.LessEquals);
-            }
-            if (target.Contains("+"))
-            {
-                opList.Add(OperatorKind.AddAssign);
-                opList.Add(OperatorKind.Add);
-            }
-            if (target.Contains("-"))
-            {
-                opList.Add(OperatorKind.SubtractAssign);
-                opList.Add(OperatorKind.Subtract);
             }
             if (target.Contains("*"))
             {
@@ -178,6 +172,20 @@ namespace artfulplace.Linear.Lambda
             {
                 opList.Add(OperatorKind.ModuloAssign);
                 opList.Add(OperatorKind.Modulo);
+            }
+            if (target.Contains("^"))
+            {
+                opList.Add(OperatorKind.Power);
+            }
+            if (target.Contains("+"))
+            {
+                opList.Add(OperatorKind.AddAssign);
+                opList.Add(OperatorKind.Add);
+            }
+            if (target.Contains("-"))
+            {
+                opList.Add(OperatorKind.SubtractAssign);
+                opList.Add(OperatorKind.Subtract);
             }
             if (target.Contains("="))
             {
@@ -313,12 +321,14 @@ namespace artfulplace.Linear.Lambda
             operatorDictionary.Add(OperatorKind.MultiplicationAssign,"*=");
             operatorDictionary.Add(OperatorKind.DivisionAssign,"/=");
             operatorDictionary.Add(OperatorKind.ModuloAssign,"%=");
+            operatorDictionary.Add(OperatorKind.PowerAssign, "^=");
             operatorDictionary.Add(OperatorKind.Add,"+");
             operatorDictionary.Add(OperatorKind.Subtract,"-");
             operatorDictionary.Add(OperatorKind.Multiplication,"*");
             operatorDictionary.Add(OperatorKind.Division,"/");
             operatorDictionary.Add(OperatorKind.Modulo,"%");
-            operatorDictionary.Add( OperatorKind.Basic,"=");
+            operatorDictionary.Add(OperatorKind.Power, "^");
+            operatorDictionary.Add(OperatorKind.Basic,"=");
         }
 
         internal enum OperatorKind
@@ -327,8 +337,7 @@ namespace artfulplace.Linear.Lambda
             And,
             Or,
             Not,
-            ExclusiveOr,
-
+            
             // equals operator
             Equals,
             NotEquals,
@@ -343,6 +352,7 @@ namespace artfulplace.Linear.Lambda
             MultiplicationAssign,
             DivisionAssign,
             ModuloAssign,
+            PowerAssign,
 
             // arithmetic operator
             Basic,

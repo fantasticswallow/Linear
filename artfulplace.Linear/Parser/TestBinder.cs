@@ -117,18 +117,18 @@ namespace artfulplace.Linear
             }
         }
 
-        public static List<String> LambdaExpressionTest(IQueryable<int> source,string target)
-        {
-            var info = MethodParser.MethodParse(target);
-            var li = info.First().Args.First();
-            var linfo = LambdaParser.Parse(li.Value, li.BracketInfo);
-            var expr = ExpressionBuilder.Build<int,bool>(linfo);
-            var res = source.Where(expr);
+        //public static List<String> LambdaExpressionTest(IQueryable<int> source,string target)
+        //{
+        //    var info = MethodParser.MethodParse(target);
+        //    var li = info.First().Args.First();
+        //    var linfo = LambdaParser.Parse(li.Value, li.BracketInfo);
+        //    var expr = ExpressionBuilder.Build<int,bool>(linfo);
+        //    var res = source.Where(expr);
                         
-            retList = new List<string>();
-            res.ForEach(x => retList.Add(x.ToString()));
-            return retList;
-        }
+        //    retList = new List<string>();
+        //    res.ForEach(x => retList.Add(x.ToString()));
+        //    return retList;
+        //}
 
         public static List<String> LambdaExpressionDynamicTest(IQueryable<int> source, string target)
         {

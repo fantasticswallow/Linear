@@ -9,7 +9,7 @@ using artfulplace.Linear.Core;
 
 namespace artfulplace.Linear
 {
-    public class SourceReference
+    internal class SourceReference
     {
         public SourceReference(string name,Assembly asm)
         {

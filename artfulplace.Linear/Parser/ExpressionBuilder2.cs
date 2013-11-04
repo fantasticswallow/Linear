@@ -176,6 +176,8 @@ namespace artfulplace.Linear.Lambda
                     return Expression.DivideAssign(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
                 case ExpressionParser.OperatorKind.ModuloAssign:
                     return Expression.ModuloAssign(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
+                case ExpressionParser.OperatorKind.PowerAssign:
+                    return Expression.PowerAssign(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
                 case ExpressionParser.OperatorKind.Add:
                     var addExpr1 = GenerateExpression(info.Expression1, args);
                     var addExpr2 = GenerateExpression(info.Expression2, args);
@@ -196,6 +198,8 @@ namespace artfulplace.Linear.Lambda
                     return Expression.Divide(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
                 case ExpressionParser.OperatorKind.Modulo:
                     return Expression.Modulo(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
+                case ExpressionParser.OperatorKind.Power:
+                    return Expression.Power(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
                 case ExpressionParser.OperatorKind.Basic:
                     return Expression.Assign(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
             }
