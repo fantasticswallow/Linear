@@ -38,7 +38,8 @@ namespace TestConsole
             curLinear.CallingAssembly = System.Reflection.Assembly.GetExecutingAssembly();
             curLinear.AddCollection("Range1", Enumerable.Range(12, 100));
             curLinear.AddCollection("Range2", Enumerable.Range(110, 15));
-            curLinear.AddCollection("TestData1", testData1.GetData());
+            var tData = (List<testData1>)testData1.GetData();
+            curLinear.AddCollection("TestData1", tData);
             //Console.WriteLine(test10);
             //Console.WriteLine("");
             //var obj = curLinear.GetResult<string>(test10);
@@ -51,9 +52,19 @@ namespace TestConsole
             //obj2.ForEach(x => Console.WriteLine(string.Format("{0} : {1} : {2}",x.Name ,x.Lv.ToString(),x.ShipType)));
             //Console.WriteLine("");
             //Console.WriteLine("");
-            Console.WriteLine(test17);
+            Console.WriteLine(test12);
             Console.WriteLine("");
-            var obj3 = curLinear.GetResult<testData1>(test17);
+            var obj3 = curLinear.GetResult<testData1>(test12);
+            // obj3.ForEach(x => Console.WriteLine(x));
+            obj3.ForEach(x => Console.WriteLine(string.Format("{0} : {1} : {2}", x.Name, x.Lv.ToString(), x.ShipType)));
+            tData.Add(testData1.Create("Yamato", 70, "BattleShip"));
+            tData.Add(testData1.Create("Nagato", 63, "BattleShip"));
+            Console.WriteLine("");
+            Console.WriteLine("");
+            Console.WriteLine("");
+            Console.WriteLine(test12);
+            Console.WriteLine("");
+            obj3 = curLinear.GetResult<testData1>(test12);
             // obj3.ForEach(x => Console.WriteLine(x));
             obj3.ForEach(x => Console.WriteLine(string.Format("{0} : {1} : {2}", x.Name, x.Lv.ToString(), x.ShipType)));
             //obj3.ForEach(x => {

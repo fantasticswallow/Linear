@@ -21,6 +21,8 @@ namespace artfulplace.Linear
             this.MemoriedCollection = new Dictionary<string, IEnumerable>();
             this.ExtendExpressionCollection = new Dictionary<string, Expression>();
             this.ExpressionCompileCollection = new Dictionary<string, Func<MethodInfo, List<ParameterExpression>, Expression>>();
+            this.CompiledQueryable = new Dictionary<string, LinearQueryable>();
+            this.CompiledExpressions = new Dictionary<string, LambdaExpression>();
             builder.LinearReference = this;
         }
 
@@ -30,6 +32,8 @@ namespace artfulplace.Linear
             this.MemoriedCollection = new Dictionary<string, IEnumerable>();
             this.ExtendExpressionCollection = new Dictionary<string, Expression>();
             this.ExpressionCompileCollection = new Dictionary<string, Func<MethodInfo, List<ParameterExpression>, Expression>>();
+            this.CompiledQueryable = new Dictionary<string, LinearQueryable>();
+            this.CompiledExpressions = new Dictionary<string, LambdaExpression>();
             builder.LinearReference = this;
         }
 
@@ -47,7 +51,10 @@ namespace artfulplace.Linear
         /// Collection References to Use From Collection 
         /// </summary>
         internal Dictionary<string, IEnumerable> MemoriedCollection { get; set; }
-        
+
+        internal Dictionary<string, LinearQueryable> CompiledQueryable { get; set; }
+        internal Dictionary<string, LambdaExpression> CompiledExpressions { get; set; }
+
         public void AddCollection<T>(string name, IEnumerable<T> collection)
         {
             MemoriedCollection.Add(name, collection);
@@ -114,6 +121,11 @@ namespace artfulplace.Linear
         /// <returns></returns>
         public IEnumerable<T> GetResult<T>(string target)
         {
+            if (CompiledQueryable.ContainsKey(target))
+            {
+                var lq = CompiledQueryable[target];
+                return (IEnumerable<T>)lq.Provider.Execute(lq.Expression);
+            }
             var info = MethodParser.MethodParse(target).ToArray();
             var colInfo = info[0];
             IEnumerable col;
@@ -145,23 +157,36 @@ namespace artfulplace.Linear
                 }
             });
             var source2 = new LinearQueryable(source1, sourceCache);
+            CompiledQueryable.Add(target, source2);
             return (IEnumerable<T>)source2.Provider.Execute(sourceCache);
         }
 
         public bool ElementIs<T>(T obj,string source)
         {
+            if (CompiledExpressions.ContainsKey(source))
+            {
+                var le = CompiledExpressions[source];
+                return ((Func<T, bool>)le.Compile()).Invoke(obj);
+            }
             var bParser = new BracketParser();
             var info = LambdaParser.Parse(source,bParser.Parse(source));
             var expr = builder.DynamicBuild(info, new Type[] { typeof(T) });
+            CompiledExpressions.Add(source, expr);
             var dele = (Func<T,bool>)expr.Compile();
             return dele.Invoke(obj);
         }
 
         public TResult ElementTo<T,TResult>(T obj, string source)
         {
+            if (CompiledExpressions.ContainsKey(source))
+            {
+                var le = CompiledExpressions[source];
+                return ((Func<T, TResult>)le.Compile()).Invoke(obj);
+            }
             var bParser = new BracketParser();
             var info = LambdaParser.Parse(source, bParser.Parse(source));
             var expr = builder.DynamicBuild(info, new Type[] { typeof(T) });
+            CompiledExpressions.Add(source, expr);
             var dele = (Func<T, TResult>)expr.Compile();
             return dele.Invoke(obj);
         }
