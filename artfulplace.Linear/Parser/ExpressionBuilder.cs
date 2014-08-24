@@ -103,7 +103,7 @@ namespace artfulplace.Linear.Lambda
         {
             switch (info.ExpressionType)
             {
-                case ExpressionParser.OperatorKind.Constant:
+                case ExpressionType.Constant:
                     object val = null;
                     Type t = null;
                     switch (info.ConstantType)
@@ -137,7 +137,7 @@ namespace artfulplace.Linear.Lambda
                             {
                                 var sp = info.ExpressionString1.Split(' ');
                                 var t2 = Type.GetType(sp[0]);
-                                var param = Expression.Parameter(t2,sp[1]);
+                                var param = Expression.Parameter(t2, sp[1]);
                                 args.Add(param);
                                 return param;
                             }
@@ -154,11 +154,8 @@ namespace artfulplace.Linear.Lambda
                                     }
                                     else // 公開されたメソッドとの対応を行えるようにする
                                     {
-                                        expr = StandardExntensionMethods.GetStandardExpression(i, args);
-                                        if (expr == null)
-                                        {
-                                            throw new ArgumentException(string.Format("メソッド名 {0} に対応するメソッドは共通メソッドで定義されていません", i.Name));
-                                        }
+                                        
+                                        
                                     }
                                 }
                                 else
@@ -169,58 +166,42 @@ namespace artfulplace.Linear.Lambda
                                             Expression[] exprs = null;
                                             if (i.Args != null)
                                             {
-                                                exprs = i.Args.Select(_ => Expression.Constant(_.GetValue(),_.GetType2())).ToArray();
+                                                exprs = i.Args.Select(_ => Expression.Constant(_.GetValue(), _.GetType2())).ToArray();
                                             }
-                                            expr = Expression.Call(expr, i.Name, i.GetArgumentTypes(), exprs);
+                                            try
+                                            {
+                                                expr = Expression.Call(expr, i.Name, i.GetArgumentTypes(), exprs);
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                if (ex is InvalidOperationException)
+                                                {
+                                                    expr = Expression.Call(expr, i.Name, null, exprs);
+                                                }
+                                                else
+                                                {
+                                                    throw ex;
+                                                }
+                                            }
                                             break;
                                         case Core.MethodInfo.MethodType.Property:
-                                            var exprs2 = i.Args.Select(_ => Expression.Constant(_.GetValue(),_.GetType2())).ToArray();
-                                            expr = Expression.Property(expr,i.Name,exprs2);
+                                            var exprs2 = i.Args.Select(_ => Expression.Constant(_.GetValue(), _.GetType2())).ToArray();
+                                            expr = Expression.Property(expr, i.Name, exprs2);
                                             break;
                                         case Core.MethodInfo.MethodType.PropertyOrField:
-                                            expr = Expression.PropertyOrField(expr,i.Name);
+                                            expr = Expression.PropertyOrField(expr, i.Name);
                                             break;
-                                    }                                    
+                                    }
                                 }
-                                
+
                             }
                             return expr;
-                            
+
                     }
-                    return Expression.Constant(val,t);
-                case ExpressionParser.OperatorKind.And:
-                    return Expression.AndAlso(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
-                case ExpressionParser.OperatorKind.Or:
-                    return Expression.OrElse(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
-                case ExpressionParser.OperatorKind.Not:
-                    return Expression.Not(GenerateExpression(info.Expression1,args));
-                case ExpressionParser.OperatorKind.Equals:
-                    return Expression.Equal(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
-                case ExpressionParser.OperatorKind.NotEquals:
-                    return Expression.NotEqual(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
-                case ExpressionParser.OperatorKind.Greater:
-                    return Expression.GreaterThan(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
-                case ExpressionParser.OperatorKind.GreaterEquals:
-                    return Expression.GreaterThanOrEqual(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
-                case ExpressionParser.OperatorKind.Less:
-                    return Expression.LessThan(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
-                case ExpressionParser.OperatorKind.LessEquals:
-                    return Expression.LessThanOrEqual(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
-                case ExpressionParser.OperatorKind.AddAssign:
-                    return Expression.AddAssign(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
-                case ExpressionParser.OperatorKind.SubtractAssign:
-                    return Expression.SubtractAssign(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
-                case ExpressionParser.OperatorKind.MultiplicationAssign:
-                    return Expression.MultiplyAssign(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
-                case ExpressionParser.OperatorKind.DivisionAssign:
-                    return Expression.DivideAssign(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
-                case ExpressionParser.OperatorKind.ModuloAssign:
-                    return Expression.ModuloAssign(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
-                case ExpressionParser.OperatorKind.PowerAssign:
-                    return Expression.PowerAssign(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
-                case ExpressionParser.OperatorKind.Add:
-                    var addExpr1 = GenerateExpression(info.Expression1,args);
-                    var addExpr2 = GenerateExpression(info.Expression2,args);
+                    return Expression.Constant(val, t);
+                case ExpressionType.Add:
+                    var addExpr1 = GenerateExpression(info.Expression1, args);
+                    var addExpr2 = GenerateExpression(info.Expression2, args);
                     if (info.ConstantType == Core.ArgumentInfo.ArgumentType.String)
                     {
                         var concatMethod = typeof(string).GetRuntimeMethod("Concat", new Type[] { typeof(string), typeof(string) });
@@ -230,21 +211,15 @@ namespace artfulplace.Linear.Lambda
                     {
                         return Expression.Add(addExpr1, addExpr2);
                     }
-                    
-                case ExpressionParser.OperatorKind.Subtract:
-                    return Expression.Subtract(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
-                case ExpressionParser.OperatorKind.Multiplication:
-                    return Expression.Multiply(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
-                case ExpressionParser.OperatorKind.Division:
-                    return Expression.Divide(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
-                case ExpressionParser.OperatorKind.Modulo:
-                    return Expression.Modulo(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
-                case ExpressionParser.OperatorKind.Power:
-                    return Expression.Power(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
-                case ExpressionParser.OperatorKind.Basic:
-                    return Expression.Assign(GenerateExpression(info.Expression1,args), GenerateExpression(info.Expression2,args));
+                case ExpressionType.And:
+                    return Expression.AndAlso(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
+                case ExpressionType.Or:
+                    return Expression.OrElse(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
+                case ExpressionType.Not:
+                    return Expression.Not(GenerateExpression(info.Expression1, args));
+                default:
+                    return Expression.MakeBinary(info.ExpressionType, GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
             }
-            return null;
         }
     }
 }

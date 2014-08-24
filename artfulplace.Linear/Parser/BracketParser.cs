@@ -306,10 +306,7 @@ namespace artfulplace.Linear.Core
                     {
                         curInfo.Children.Reverse();
                     }
-                    if (curInfo.Children != null)
-                    {
-                        curInfo.Children.Reverse();
-                    } infoStack.Push(curInfo);
+                    infoStack.Push(curInfo);
                     parseStack.Push(cur);
                 }
 

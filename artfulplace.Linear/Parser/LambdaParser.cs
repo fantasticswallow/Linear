@@ -51,6 +51,10 @@ namespace artfulplace.Linear.Core
 
         internal static Lambda.LambdaArgumentInfo[] ParseArg(string target)
         {
+            if (string.IsNullOrEmpty(target))
+            {
+                return null;
+            }
             return target.Trim().Split(',').Select(_ =>
             {
                 var info = new Lambda.LambdaArgumentInfo();

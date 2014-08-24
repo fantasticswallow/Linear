@@ -27,6 +27,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\artfulplace.Linear.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -45,6 +46,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IntellisenseHelper.cs" />
+    <Compile Include="LambdaStringComplementer.cs" />
+    <Compile Include="LinearExtensionProvider.cs" />
     <Compile Include="LinearQueryable.cs" />
     <Compile Include="Parser\BracketParser.cs" />
     <Compile Include="Linear.cs" />

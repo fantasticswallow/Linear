@@ -19,5 +19,24 @@ namespace artfulplace.Linear.Lambda
         internal string Name { get; set; }
         internal string Type { get; set; }
         internal bool IsDefined { get; set; }
+
+        public Type GetType2()
+        {
+            switch (this.Type)
+            {
+                case "bool":
+                    return typeof(bool);
+                case "string":
+                    return typeof(string);
+                case "double":
+                    return typeof(double);
+                case "long":
+                    return typeof(long);
+                case "int":
+                    return typeof(int);
+                default:
+                    return null;
+            }
+        }
     }    
 }

@@ -20,7 +20,7 @@ namespace artfulplace.Linear
             this.IsSafeMode = true;
             this.MemoriedCollection = new Dictionary<string, IEnumerable>();
             this.ExtendExpressionCollection = new Dictionary<string, Expression>();
-            this.ExpressionCompileCollection = new Dictionary<string, Func<MethodInfo, List<ParameterExpression>, Expression>>();
+            this.ExpressionCompileCollection = new Dictionary<string, Func<MethodInfo, List<ParameterExpression>, Dictionary<string, Expression>, Expression>>();
             this.CompiledQueryable = new Dictionary<string, LinearQueryable>();
             this.CompiledExpressions = new Dictionary<string, LambdaExpression>();
             builder.LinearReference = this;
@@ -31,7 +31,7 @@ namespace artfulplace.Linear
             this.IsSafeMode = safeMode;
             this.MemoriedCollection = new Dictionary<string, IEnumerable>();
             this.ExtendExpressionCollection = new Dictionary<string, Expression>();
-            this.ExpressionCompileCollection = new Dictionary<string, Func<MethodInfo, List<ParameterExpression>, Expression>>();
+            this.ExpressionCompileCollection = new Dictionary<string, Func<MethodInfo, List<ParameterExpression>, Dictionary<string, Expression>, Expression>>();
             this.CompiledQueryable = new Dictionary<string, LinearQueryable>();
             this.CompiledExpressions = new Dictionary<string, LambdaExpression>();
             builder.LinearReference = this;
@@ -43,7 +43,9 @@ namespace artfulplace.Linear
         public bool IsSafeMode { get; private set; }
 
         public Dictionary<string, Expression> ExtendExpressionCollection { get; set; }
-        public Dictionary<string, Func<MethodInfo,List<ParameterExpression>,Expression>> ExpressionCompileCollection { get; set; }
+        public Dictionary<string, Func<MethodInfo,List<ParameterExpression>,Dictionary<string,Expression>,Expression>> ExpressionCompileCollection { get; set; }
+
+        public Action<string> WriteAction { get; set; }
 
         private artfulplace.Linear.Lambda.ExpressionBuilder2 builder = new artfulplace.Linear.Lambda.ExpressionBuilder2();
 
@@ -111,6 +113,9 @@ namespace artfulplace.Linear
             }
         }
 
+        /// <summary>
+        /// Assembly of Host Application. To use Calling Methods and Get Collection's Reference 
+        /// </summary>
         public System.Reflection.Assembly CallingAssembly { get; set; }
 
         /// <summary>
@@ -121,11 +126,11 @@ namespace artfulplace.Linear
         /// <returns></returns>
         public IEnumerable<T> GetResult<T>(string target)
         {
-            if (CompiledQueryable.ContainsKey(target))
-            {
-                var lq = CompiledQueryable[target];
-                return (IEnumerable<T>)lq.Provider.Execute(lq.Expression);
-            }
+            //if (CompiledQueryable.ContainsKey(target))
+            //{
+            //    var lq = CompiledQueryable[target];
+            //    return (IEnumerable<T>)lq.Provider.Execute(lq.Expression);
+            //}
             var info = MethodParser.MethodParse(target).ToArray();
             var colInfo = info[0];
             IEnumerable col;
@@ -134,6 +139,9 @@ namespace artfulplace.Linear
                 case "From":
                     col = FromResolver(colInfo);
                     break;
+                case "TypeMember":
+                    typeMember(typeof(T));
+                    return default(IEnumerable<T>);
                 default:
                     throw new ArgumentException("Collectionが指定されていません。クエリの最初は From(string),または From(SourceReference(Method)) から始める必要があります。");
 
@@ -157,10 +165,17 @@ namespace artfulplace.Linear
                 }
             });
             var source2 = new LinearQueryable(source1, sourceCache);
-            CompiledQueryable.Add(target, source2);
+            // CompiledQueryable.Add(target, source2);
             return (IEnumerable<T>)source2.Provider.Execute(sourceCache);
         }
 
+        /// <summary>
+        /// like Queryable.Where for Single Object
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <param name="source"></param>
+        /// <returns></returns>
         public bool ElementIs<T>(T obj,string source)
         {
             if (CompiledExpressions.ContainsKey(source))
@@ -168,14 +183,23 @@ namespace artfulplace.Linear
                 var le = CompiledExpressions[source];
                 return ((Func<T, bool>)le.Compile()).Invoke(obj);
             }
+            var source2 = LambdaStringComplementer.Check(source);
             var bParser = new BracketParser();
-            var info = LambdaParser.Parse(source,bParser.Parse(source));
+            var info = LambdaParser.Parse(source2,bParser.Parse(source2));
             var expr = builder.DynamicBuild(info, new Type[] { typeof(T) });
             CompiledExpressions.Add(source, expr);
             var dele = (Func<T,bool>)expr.Compile();
             return dele.Invoke(obj);
         }
 
+        /// <summary>
+        /// like Queryable.Select for Single Object
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="obj"></param>
+        /// <param name="source"></param>
+        /// <returns></returns>
         public TResult ElementTo<T,TResult>(T obj, string source)
         {
             if (CompiledExpressions.ContainsKey(source))
@@ -183,12 +207,25 @@ namespace artfulplace.Linear
                 var le = CompiledExpressions[source];
                 return ((Func<T, TResult>)le.Compile()).Invoke(obj);
             }
+            var source2 = LambdaStringComplementer.Check(source);
             var bParser = new BracketParser();
-            var info = LambdaParser.Parse(source, bParser.Parse(source));
+            var info = LambdaParser.Parse(source2, bParser.Parse(source2));
             var expr = builder.DynamicBuild(info, new Type[] { typeof(T) });
             CompiledExpressions.Add(source, expr);
             var dele = (Func<T, TResult>)expr.Compile();
             return dele.Invoke(obj);
+        }
+
+        private void typeMember(Type t)
+        {
+            var s = System.Reflection.RuntimeReflectionExtensions.GetRuntimeProperties(t).Select(x => string.Format("{0} as {1}",x.Name, x.PropertyType));
+            var sb = new StringBuilder();
+            foreach (var xs in s)
+            {
+                sb.Append(xs);
+                sb.Append(Environment.NewLine);
+            }
+            WriteAction(sb.ToString());
         }
 
         /// <summary>
@@ -207,6 +244,9 @@ namespace artfulplace.Linear
                 case "From":
                     col = FromResolver(colInfo);
                     break;
+                case "TypeMember":
+                    typeMember(typeof(T));
+                    return default(T);
                 default:
                     throw new ArgumentException("Collectionが指定されていません。クエリの最初は From(string),または From(SourceReference(Method)) から始める必要があります。");
 
@@ -234,15 +274,42 @@ namespace artfulplace.Linear
         }
 
         /// <summary>
+        /// Invoke Lambda Expression in Linear Object
+        /// </summary>
+        /// <param name="source"></param>
+        /// <remarks>Only Action (not Generic) is invokable. Generic Type Action can't invoke.</remarks>
+        public void InvokeLambda(string source)
+        {
+            var bParser = new BracketParser();
+            var info = LambdaParser.Parse(source, bParser.Parse(source));
+            var expr = builder.DynamicBuild(info, new Type[0]);
+            dynamic dele = expr.Compile();
+            dele()()();
+        }
+
+        public void InvokeLambda(string source, object arg1)
+        {
+            var bParser = new BracketParser();
+            var info = LambdaParser.Parse(source, bParser.Parse(source));
+            var expr = builder.DynamicBuild(info, new Type[] {arg1.GetType()});
+            dynamic dele = expr.Compile();
+            dele(arg1.ToString())(arg1.ToString())(arg1.ToString());
+        }
+
+        /// <summary>
         /// Get Applied Text Query Collection From Argument collection
         /// </summary>
         /// <typeparam name="T">Type of Source</typeparam>
         /// <typeparam name="TResult">Type of Result Collection</typeparam>
-        /// <param name="source"></param>
-        /// <param name="target"></param>
-        /// <returns></returns>
+        /// <param name="source">To Apply Collection</param>
+        /// <param name="target">Query string</param>
+        /// <returns>Result Applied query Collection</returns>
         public static IEnumerable<TResult> ToLinear<T,TResult>(IEnumerable<T> source, string target)
         {
+            if (string.IsNullOrEmpty(target))
+            {
+                return (IEnumerable<TResult>)source;
+            }
             var source1 = source.AsQueryable<T>();
             var source3 = new LinearQueryable<T>(source1);
             var info = MethodParser.MethodParse(target);

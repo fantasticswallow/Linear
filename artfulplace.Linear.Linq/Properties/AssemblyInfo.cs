@@ -7,11 +7,11 @@ using System.Runtime.InteropServices;
 // アセンブリに関連付けられている情報を変更するには、
 // これらの属性値を変更してください。
 [assembly: AssemblyTitle("artfulplace.Linear.Linq")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Provides Extensions for artfulplace Application Service")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("artfulplace.Linear.Linq")]
-[assembly: AssemblyCopyright("Copyright (C)  2013")]
+[assembly: AssemblyCopyright("Copyright (C) artfulplace.net 2013 - 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("ja")]

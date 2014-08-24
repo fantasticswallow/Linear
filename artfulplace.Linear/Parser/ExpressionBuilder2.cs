@@ -32,7 +32,10 @@ namespace artfulplace.Linear.Lambda
         internal LambdaExpression DynamicBuild(LambdaInfo info, Type[] args)
         {
             var args2 = new List<ParameterExpression>();
-            info.Arguments.ForEach((x, idx) => args2.Add(argExpressionDynamic(x, args[idx])));
+            if (info.Arguments != null)
+            {
+                info.Arguments.ForEach((x, idx) => args2.Add(argExpressionDynamic(x, args[idx])));
+            }
             var args3 = args2.ToList();
             var expr = GenerateExpression(info.Expressions.First(), args3);
             return Expression.Lambda(expr, args2);
@@ -42,7 +45,7 @@ namespace artfulplace.Linear.Lambda
         {
             switch (info.ExpressionType)
             {
-                case ExpressionParser.OperatorKind.Constant:
+                case ExpressionType.Constant:
                     object val = null;
                     Type t = null;
                     switch (info.ConstantType)
@@ -83,8 +86,14 @@ namespace artfulplace.Linear.Lambda
                         case Core.ArgumentInfo.ArgumentType.Method:
                             var ms = Core.MethodParser.MethodParse(info.ExpressionString1).ToArray();
                             Expression expr = null;
+                            var skipLoop = false;
                             foreach (var i in ms)
                             {
+                                if (skipLoop)
+                                {
+                                    skipLoop = false;
+                                    continue;
+                                }
                                 if (expr == null)
                                 {
                                     if (args.Any(x => x.Name == i.Name))
@@ -102,19 +111,85 @@ namespace artfulplace.Linear.Lambda
                                                 var source1 = colx.AsQueryable();
                                                 var xt = source1.GetType().GenericTypeArguments.First();
                                                 var gent = typeof(LinearQueryable<>).MakeGenericType(xt);
-                                                var source3 = (IQueryable)Activator.CreateInstance(gent,source1);
+                                                var source3 = (IQueryable)Activator.CreateInstance(gent, source1);
                                                 expr = Expression.Constant(source3, gent);
+                                            }
+                                            else if (i.Name == "_$")
+                                            {
+                                                if (ms.Length >= 2)
+                                                {
+                                                    skipLoop = true;
+                                                    var a3 = i.Args.First().Value;
+                                                    var t2 = Type.GetType(a3);
+                                                    var i2 = ms.ElementAt(1);
+                                                    Expression[] exprs = null;
+                                                    if (i2.Args != null)
+                                                    {
+                                                        exprs = i2.Args.Select<Core.ArgumentInfo, Expression>(_ =>
+                                                        {
+                                                            if (args.Any(x => x.Name == _.Value))
+                                                            {
+                                                                return args.Find(x => x.Name == _.Value);
+                                                            }
+                                                            else
+                                                            {
+                                                                return Expression.Constant(_.GetValue(), _.GetType2());
+                                                            }
+
+                                                        }).ToArray();
+                                                    }
+                                                    try
+                                                    {
+                                                        expr = Expression.Call(t2, i2.Name, i2.GetArgumentTypes(), exprs);
+                                                    }
+                                                    catch (Exception ex)
+                                                    {
+                                                        if (ex is InvalidOperationException)
+                                                        {
+                                                            expr = Expression.Call(t2, i2.Name, null, exprs);
+                                                        }
+                                                        else
+                                                        {
+                                                            throw ex;
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    throw new ArgumentException("_$ must Call Method.");
+                                                }
                                             }
                                             else if (LinearReference.ExpressionCompileCollection.ContainsKey(i.Name))
                                             {
-                                                expr = LinearReference.ExpressionCompileCollection[i.Name].Invoke(i, args);
+                                                var mtExpr = i.Args.Select(x =>
+                                                {
+                                                    if (x.Type == Core.ArgumentInfo.ArgumentType.Method)
+                                                    {
+                                                        var exi = new ExpressionBasicInfo();
+                                                        exi.ConstantType = Core.ArgumentInfo.ArgumentType.Method;
+                                                        exi.ExpressionType = ExpressionType.Constant;
+                                                        exi.ExpressionString1 = x.Value;
+                                                        return exi;
+                                                    }
+                                                    else
+                                                    {
+                                                        var exi = new ExpressionBasicInfo();
+                                                        exi.ConstantType = x.Type;
+                                                        exi.ExpressionType = ExpressionType.Constant;
+                                                        exi.ExpressionString1 = x.Value;
+                                                        return exi;
+                                                    }
+                                                }).ToDictionary<ExpressionBasicInfo, string, Expression>(x => x.ExpressionString1, x => GenerateExpression(x, args));
+
+                                                expr = LinearReference.ExpressionCompileCollection[i.Name].Invoke(i, args, mtExpr);
                                             }
                                             else if (LinearReference.ExtendExpressionCollection.ContainsKey(i.Name))
                                             {
                                                 expr = LinearReference.ExtendExpressionCollection[i.Name];
+                                                expr = Expression.Lambda(expr, args);
                                             }
 
-                                            if (expr == null) 
+                                            if (expr == null)
                                             {
                                                 throw new ArgumentException(string.Format("メソッド名 {0} に対応するメソッドは共通メソッドで定義されていません", i.Name));
                                             }
@@ -131,7 +206,21 @@ namespace artfulplace.Linear.Lambda
                                             {
                                                 exprs = i.Args.Select(_ => Expression.Constant(_.GetValue(), _.GetType2())).ToArray();
                                             }
-                                            expr = Expression.Call(expr, i.Name, i.GetArgumentTypes(), exprs);
+                                            try
+                                            {
+                                                expr = Expression.Call(expr, i.Name, i.GetArgumentTypes(), exprs);
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                if (ex is InvalidOperationException)
+                                                {
+                                                    expr = Expression.Call(expr, i.Name, null, exprs);
+                                                }
+                                                else
+                                                {
+                                                    throw ex;
+                                                }
+                                            }
                                             break;
                                         case Core.MethodInfo.MethodType.Property:
                                             var exprs2 = i.Args.Select(_ => Expression.Constant(_.GetValue(), _.GetType2())).ToArray();
@@ -148,37 +237,7 @@ namespace artfulplace.Linear.Lambda
 
                     }
                     return Expression.Constant(val, t);
-                case ExpressionParser.OperatorKind.And:
-                    return Expression.AndAlso(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
-                case ExpressionParser.OperatorKind.Or:
-                    return Expression.OrElse(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
-                case ExpressionParser.OperatorKind.Not:
-                    return Expression.Not(GenerateExpression(info.Expression1, args));
-                case ExpressionParser.OperatorKind.Equals:
-                    return Expression.Equal(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
-                case ExpressionParser.OperatorKind.NotEquals:
-                    return Expression.NotEqual(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
-                case ExpressionParser.OperatorKind.Greater:
-                    return Expression.GreaterThan(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
-                case ExpressionParser.OperatorKind.GreaterEquals:
-                    return Expression.GreaterThanOrEqual(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
-                case ExpressionParser.OperatorKind.Less:
-                    return Expression.LessThan(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
-                case ExpressionParser.OperatorKind.LessEquals:
-                    return Expression.LessThanOrEqual(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
-                case ExpressionParser.OperatorKind.AddAssign:
-                    return Expression.AddAssign(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
-                case ExpressionParser.OperatorKind.SubtractAssign:
-                    return Expression.SubtractAssign(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
-                case ExpressionParser.OperatorKind.MultiplicationAssign:
-                    return Expression.MultiplyAssign(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
-                case ExpressionParser.OperatorKind.DivisionAssign:
-                    return Expression.DivideAssign(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
-                case ExpressionParser.OperatorKind.ModuloAssign:
-                    return Expression.ModuloAssign(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
-                case ExpressionParser.OperatorKind.PowerAssign:
-                    return Expression.PowerAssign(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
-                case ExpressionParser.OperatorKind.Add:
+                case ExpressionType.Add:
                     var addExpr1 = GenerateExpression(info.Expression1, args);
                     var addExpr2 = GenerateExpression(info.Expression2, args);
                     if (info.ConstantType == Core.ArgumentInfo.ArgumentType.String)
@@ -190,20 +249,16 @@ namespace artfulplace.Linear.Lambda
                     {
                         return Expression.Add(addExpr1, addExpr2);
                     }
-                case ExpressionParser.OperatorKind.Subtract:
-                    return Expression.Subtract(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
-                case ExpressionParser.OperatorKind.Multiplication:
-                    return Expression.Multiply(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
-                case ExpressionParser.OperatorKind.Division:
-                    return Expression.Divide(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
-                case ExpressionParser.OperatorKind.Modulo:
-                    return Expression.Modulo(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
-                case ExpressionParser.OperatorKind.Power:
-                    return Expression.Power(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
-                case ExpressionParser.OperatorKind.Basic:
-                    return Expression.Assign(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
+                case ExpressionType.And:
+                    return Expression.AndAlso(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
+                case ExpressionType.Or:
+                    return Expression.OrElse(GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
+                case ExpressionType.Not:
+                    return Expression.Not(GenerateExpression(info.Expression1, args));
+                default:
+                    return Expression.MakeBinary(info.ExpressionType, GenerateExpression(info.Expression1, args), GenerateExpression(info.Expression2, args));
             }
-            return null;
+            // return null;
         }
     }
 }

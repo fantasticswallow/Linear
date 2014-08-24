@@ -34,6 +34,13 @@ namespace TestConsole
             return l;
         }
 
+        internal static List<testData1> DataCache;
+
+        public static IEnumerable<testData1> GetData2()
+        {
+            return DataCache.ToArray();
+        }
+
         internal static testData1 Create(string name,int lv,string st)
         {
             var obj = new testData1();

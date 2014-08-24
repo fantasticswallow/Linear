@@ -124,6 +124,79 @@ namespace artfulplace.Linear
                     }
                     var cons2 = typeof(TimeSpan).GetTypeInfo().DeclaredConstructors.Where(_ => _.GetParameters().Length == exprs.Length).First();
                     return Expression.New(cons2, exprs);
+                case "TypeConvert":
+                    var tcArg1 = info.Args.ElementAt(0);
+                    var tcArg2 = info.Args.ElementAt(1);
+                    Expression tcExpr;
+                    if (tcArg1.Type == ArgumentInfo.ArgumentType.Variable)
+                    {
+                        tcExpr = (Expression)args.Find(x => x.Name == tcArg1.Value);
+                    }
+                    else if (tcArg1.Type == ArgumentInfo.ArgumentType.Method)
+                    {
+                        tcExpr = stringMethodToExpression(tcArg1.Value, args);
+                    }
+                    else
+                    {
+                        tcExpr = Expression.Constant(tcArg1.GetValue(), tcArg1.GetType2());
+                    }
+                    var tcT = Type.GetType(tcArg2.Value);
+                    return Expression.Convert(tcExpr, tcT);
+                case "$":
+                    if (info.Args.Count() > 1)
+                    {
+                        exprs = info.Args.Skip(1).Select(_ =>
+                        {
+                            if (_.Type == ArgumentInfo.ArgumentType.Variable)
+                            {
+                                return (Expression)args.Find(x => x.Name == _.Value);
+                            }
+                            else if (_.Type == ArgumentInfo.ArgumentType.Method)
+                            {
+                                return stringMethodToExpression(_.Value, args);
+                            }
+                            else
+                            {
+                                return Expression.Constant(_.GetValue(), _.GetType2());
+                            }
+                        }).ToArray();
+                    }
+                    var a3 = info.Args.First();
+                    var t4 = Type.GetType(a3.Value);
+                    var cons3 = t4.GetTypeInfo().DeclaredConstructors.Where(_ => _.GetParameters().Length == exprs.Length).First();
+                    return Expression.New(cons3, exprs);
+                    
+                //case "PropChange":
+                //    var propChangeArgs = new Type[2];
+                //    if (info.Args != null)
+                //    {
+                //        exprs = info.Args.Select(_ =>
+                //        {
+                //            if (_.Type == ArgumentInfo.ArgumentType.Variable)
+                //            {
+                //                // return (Expression)args.Find(x => x.Name == _.Value);
+                //                var argExpr = (Expression)args.Find(x => x.Name == _.Value);
+                //                propChangeArgs[0] =argExpr.Type;
+                //                return argExpr;
+                //            }
+                //            else if (_.Type == ArgumentInfo.ArgumentType.Method)
+                //            {
+                //                return stringMethodToExpression(_.Value, args);
+                //            }
+                //            else if (_.Type == ArgumentInfo.ArgumentType.Lambda)
+                //            {
+                //                var propLinfo = LambdaParser.Parse(_.Value, _.BracketInfo);
+                //                propChangeArgs[1] = propLinfo.Arguments[0].GetType2();
+                //                return Lambda.ExpressionBuilder.DynamicBuild(propLinfo, propLinfo.Arguments.Select(x => x.GetType2()).ToArray());
+                //            }
+                //            else
+                //            {
+                //                return Expression.Constant(_.GetValue(), _.GetType2());
+                //            }
+                //        }).ToArray();
+                //    }
+                //    return Expression.Call(typeof(StandardExntensionMethods), "PropChange", propChangeArgs, exprs);
+
             }
             return null;
         }
@@ -168,6 +241,32 @@ namespace artfulplace.Linear
                 }
             }
             return expr;
+        }
+
+
+        /// <summary>
+        /// Change object's property value. To use Select and collection type will not be changed.
+        /// </summary>
+        /// <typeparam name="T">Target object's Type</typeparam>
+        /// <typeparam name="TVal">Target property's Type</typeparam>
+        /// <param name="obj">To Apply SetValue object</param>
+        /// <param name="name">Property Name</param>
+        /// <param name="pred">Expression of Transform value</param>
+        /// <returns>This code affects side effect for target object.  If you use this code, your collection must evaluate after Linear evaluated.</returns>
+        public static T PropChange<T, TVal> (T obj, string name, Func<TVal,TVal> pred)
+        {
+            try
+            {
+                var prop = obj.GetType().GetRuntimeProperty(name);
+                if (prop != null)
+                {
+                    prop.SetValue(obj, pred((TVal)prop.GetValue(obj)));
+                }
+            }
+            catch (Exception)
+            {
+            }
+            return obj;
         }
 
     }

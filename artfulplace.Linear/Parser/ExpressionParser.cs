@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using artfulplace.Linear.Linq;
 using System.Text.RegularExpressions;
+using System.Linq.Expressions;
 
 namespace artfulplace.Linear.Lambda
 {
@@ -72,7 +73,7 @@ namespace artfulplace.Linear.Lambda
         private ExpressionBasicInfo NotExpression(string target, BracketParseInfo brackInfo)
         {
             var info = new ExpressionBasicInfo();
-            info.ExpressionType = OperatorKind.Not;
+            info.ExpressionType = ExpressionType.Not;
             info.ExpressionString1 = target;
             info.Expression1 = SearchExpression(target, brackInfo);
             return info;
@@ -103,7 +104,7 @@ namespace artfulplace.Linear.Lambda
                 curType = ArgumentInfo.ArgumentType.Method;
             }
             var info = new ExpressionBasicInfo();
-            info.ExpressionType = OperatorKind.Constant;
+            info.ExpressionType = ExpressionType.Constant;
             info.ExpressionString1 = target;
             info.ConstantType = curType;
             return info;
@@ -113,7 +114,7 @@ namespace artfulplace.Linear.Lambda
         {
             var info = new ExpressionBasicInfo();
             info.ExpressionString1 = target;
-            info.ExpressionType = OperatorKind.Constant;
+            info.ExpressionType = ExpressionType.Constant;
             info.ConstantType = ArgumentInfo.ArgumentType.String;
             return info;
         }
@@ -126,72 +127,72 @@ namespace artfulplace.Linear.Lambda
         /// <returns></returns>
         private ExpressionBasicInfo SearchExpression(string target,BracketParseInfo brackInfo)
         {
-            var opList = new List<OperatorKind>();
+            var opList = new List<ExpressionType>();
             target = replaceBracket(target, brackInfo);
             if (target.Contains("&&"))
             {
-                opList.Add(OperatorKind.And);
+                opList.Add(ExpressionType.And);
             }
             if (target.Contains("||"))
             {
-                opList.Add(OperatorKind.Or);
+                opList.Add(ExpressionType.Or);
             }
             if (target.Contains("=="))
             {
-                opList.Add(OperatorKind.Equals);
+                opList.Add(ExpressionType.Equal);
             }
-            if (target.Contains("=="))
-            {
-                opList.Add(OperatorKind.Equals);
-            }
+            //if (target.Contains("=="))
+            //{
+            //    opList.Add(ExpressionType.Equal);
+            //}
             if (target.Contains("!"))
             {
-                opList.Add(OperatorKind.NotEquals);
+                opList.Add(ExpressionType.NotEqual);
             }
             if (target.Contains(">"))
             {
-                opList.Add(OperatorKind.Greater);
-                opList.Add(OperatorKind.GreaterEquals);
+                opList.Add(ExpressionType.GreaterThanOrEqual);
+                opList.Add(ExpressionType.GreaterThan);
             }
             if (target.Contains("<"))
             {
-                opList.Add(OperatorKind.Less);
-                opList.Add(OperatorKind.LessEquals);
+                opList.Add(ExpressionType.LessThanOrEqual);
+                opList.Add(ExpressionType.LessThan);
             }
             if (target.Contains("*"))
             {
-                opList.Add(OperatorKind.MultiplicationAssign);
-                opList.Add(OperatorKind.Multiplication);
+                opList.Add(ExpressionType.MultiplyAssign);
+                opList.Add(ExpressionType.Multiply );
             }
             if (target.Contains("/"))
             {
-                opList.Add(OperatorKind.DivisionAssign);
-                opList.Add(OperatorKind.Division);
+                opList.Add(ExpressionType.DivideAssign);
+                opList.Add(ExpressionType.Divide);
             }
             if (target.Contains("%"))
             {
-                opList.Add(OperatorKind.ModuloAssign);
-                opList.Add(OperatorKind.Modulo);
+                opList.Add(ExpressionType.ModuloAssign);
+                opList.Add(ExpressionType.Modulo);
             }
             if (target.Contains("^"))
             {
-                opList.Add(OperatorKind.Power);
+                opList.Add(ExpressionType.Power);
             }
             if (target.Contains("+"))
             {
-                opList.Add(OperatorKind.AddAssign);
-                opList.Add(OperatorKind.Add);
+                opList.Add(ExpressionType.AddAssign);
+                opList.Add(ExpressionType.Add);
             }
             if (target.Contains("-"))
             {
-                opList.Add(OperatorKind.SubtractAssign);
-                opList.Add(OperatorKind.Subtract);
+                opList.Add(ExpressionType.SubtractAssign);
+                opList.Add(ExpressionType.Subtract);
             }
             if (target.Contains("="))
             {
-                opList.Add(OperatorKind.Equals);
+                opList.Add(ExpressionType.Equal);
             }
-            opList.Add(OperatorKind.Constant);
+            opList.Add(ExpressionType.Constant);
             if (opList.Count == 1)
             {
                 return ConstantExpression(target);
@@ -202,11 +203,11 @@ namespace artfulplace.Linear.Lambda
             }
         }
 
-        private ExpressionBasicInfo ExpressionParse(string target, BracketParseInfo brackInfo,List<OperatorKind> opList,int index)
+        private ExpressionBasicInfo ExpressionParse(string target, BracketParseInfo brackInfo,List<ExpressionType> opList,int index)
         {
             var curType = opList[index];
             
-            if (curType == OperatorKind.Constant)
+            if (curType == ExpressionType.Constant)
             {
                 return ConstantExpression(target);
             }
@@ -302,78 +303,79 @@ namespace artfulplace.Linear.Lambda
 
         #region operator enumeration
 
-        private Dictionary<OperatorKind,string> operatorDictionary { get; set; }
+        private Dictionary<ExpressionType,string> operatorDictionary { get; set; }
         
         private void dictInit()
         {
-            operatorDictionary = new Dictionary<OperatorKind, string>();
-            operatorDictionary.Add(OperatorKind.And, "&&");
-            operatorDictionary.Add(OperatorKind.Or, "||");
-            operatorDictionary.Add(OperatorKind.Equals, "==");
-            operatorDictionary.Add(OperatorKind.NotEquals, "!=");
-            operatorDictionary.Add(OperatorKind.GreaterEquals, ">=");
-            operatorDictionary.Add(OperatorKind.LessEquals, "<=");
-            operatorDictionary.Add(OperatorKind.Greater, ">");
-            operatorDictionary.Add(OperatorKind.Less, "<");
+            operatorDictionary = new Dictionary<ExpressionType, string>();
+            operatorDictionary.Add(ExpressionType.And, "&&");
+            operatorDictionary.Add(ExpressionType.Or, "||");
 
-            operatorDictionary.Add(OperatorKind.AddAssign,"+=");
-            operatorDictionary.Add(OperatorKind.SubtractAssign,"-=");
-            operatorDictionary.Add(OperatorKind.MultiplicationAssign,"*=");
-            operatorDictionary.Add(OperatorKind.DivisionAssign,"/=");
-            operatorDictionary.Add(OperatorKind.ModuloAssign,"%=");
-            operatorDictionary.Add(OperatorKind.PowerAssign, "^=");
-            operatorDictionary.Add(OperatorKind.Add,"+");
-            operatorDictionary.Add(OperatorKind.Subtract,"-");
-            operatorDictionary.Add(OperatorKind.Multiplication,"*");
-            operatorDictionary.Add(OperatorKind.Division,"/");
-            operatorDictionary.Add(OperatorKind.Modulo,"%");
-            operatorDictionary.Add(OperatorKind.Power, "^");
-            operatorDictionary.Add(OperatorKind.Basic,"=");
+            operatorDictionary.Add(ExpressionType.Equal, "==");
+            operatorDictionary.Add(ExpressionType.NotEqual, "!=");
+            operatorDictionary.Add(ExpressionType.GreaterThanOrEqual, ">=");
+            operatorDictionary.Add(ExpressionType.LessThanOrEqual, "<=");
+            operatorDictionary.Add(ExpressionType.GreaterThan, ">");
+            operatorDictionary.Add(ExpressionType.LessThan, "<");
+
+            operatorDictionary.Add(ExpressionType.AddAssign,"+=");
+            operatorDictionary.Add(ExpressionType.SubtractAssign,"-=");
+            operatorDictionary.Add(ExpressionType.MultiplyAssign,"*=");
+            operatorDictionary.Add(ExpressionType.DivideAssign,"/=");
+            operatorDictionary.Add(ExpressionType.ModuloAssign,"%=");
+            operatorDictionary.Add(ExpressionType.PowerAssign, "^=");
+            operatorDictionary.Add(ExpressionType.Add,"+");
+            operatorDictionary.Add(ExpressionType.Subtract,"-");
+            operatorDictionary.Add(ExpressionType.Multiply,"*");
+            operatorDictionary.Add(ExpressionType.Divide,"/");
+            operatorDictionary.Add(ExpressionType.Modulo,"%");
+            operatorDictionary.Add(ExpressionType.Power, "^");
+            operatorDictionary.Add(ExpressionType.Assign,"=");
         }
 
-        internal enum OperatorKind
-        {
-            // logical Operator 
-            And,
-            Or,
-            Not,
+        //internal enum OperatorKind
+        //{
+        //    // logical Operator 
+        //    And,
+        //    Or,
+        //    Not,
             
-            // equals operator
-            Equals,
-            NotEquals,
-            Greater,
-            Less,
-            GreaterEquals,
-            LessEquals,
+        //    // equals operator
+        //    Equals,
+        //    NotEquals,
+        //    Greater,
+        //    Less,
+        //    GreaterEquals,
+        //    LessEquals,
 
-            // assignment operator
-            AddAssign,
-            SubtractAssign,
-            MultiplicationAssign,
-            DivisionAssign,
-            ModuloAssign,
-            PowerAssign,
+        //    // assignment operator
+        //    AddAssign,
+        //    SubtractAssign,
+        //    MultiplicationAssign,
+        //    DivisionAssign,
+        //    ModuloAssign,
+        //    PowerAssign,
 
-            // arithmetic operator
-            Basic,
-            Add,
-            Subtract,
-            Multiplication,
-            Division,
-            Modulo,
-            Power,
+        //    // arithmetic operator
+        //    Basic,
+        //    Add,
+        //    Subtract,
+        //    Multiplication,
+        //    Division,
+        //    Modulo,
+        //    Power,
 
-            // others (contains not use)
-            String,
-            Char,
-            BracketRound,
-            BracketCurly,
-            BracketSquare,
-            Constant,
+        //    // others (contains not use)
+        //    String,
+        //    Char,
+        //    BracketRound,
+        //    BracketCurly,
+        //    BracketSquare,
+        //    Constant,
 
-            None
+        //    None
 
-        }
+        //}
 
         #endregion
 
@@ -381,7 +383,7 @@ namespace artfulplace.Linear.Lambda
 
     internal class ExpressionBasicInfo
     {
-        internal ExpressionParser.OperatorKind ExpressionType { get; set; }
+        internal ExpressionType ExpressionType { get; set; }
         internal ExpressionBasicInfo Expression1 { get; set; }
         internal ExpressionBasicInfo Expression2 { get; set; }
         internal string ExpressionString1 { get; set; }
