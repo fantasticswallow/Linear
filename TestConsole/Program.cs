@@ -44,12 +44,15 @@ namespace TestConsole
             var test25 = "_ => _.ToString()";
             var test26 = "_.Contains(\"test\")";
             var test27 = "From(\"Range1\").Where(_ => _ <= 20).Select(_ => TypeConvert(_,System.Double)).Select(_ => _$(System.Math).Pow(_,2.0))";
+            var test28 = "From(tapi.GetCount(7))";
+            var test29 = "From(tapi.GetPow(7l,3.0))";
             //var list = TestBinder.MethodParseTest(test);
             //list.ForEach(_ => Console.WriteLine(_));
             var curLinear = new Linear(false);
             curLinear.CallingAssembly = System.Reflection.Assembly.GetExecutingAssembly();
             curLinear.AddCollection("Range1", Enumerable.Range(1, 100));
             curLinear.AddCollection("Range2", Enumerable.Range(110, 15));
+            curLinear.AddProvider(new TestProvider());
             Expression<Action> e = () => Console.WriteLine("Test");
             curLinear.ExtendExpressionCollection.Add("ConsoleWrite", e);
             testData1.DataCache = (List<testData1>)testData1.GetData();
@@ -105,11 +108,17 @@ namespace TestConsole
             //Console.WriteLine();
             //Console.WriteLine("Target : hogehoge -> Result : {0}", curLinear.ElementIs("hogehoge", test26));
             //Console.WriteLine("Target : hogetesthoge -> Result : {0}", curLinear.ElementIs("hogetesthoge", test26));
-            Console.WriteLine(test27);
-            Console.WriteLine();
-            var obj3 = curLinear.GetResult<double>(test27);
+            //Console.WriteLine(test27);
+            //Console.WriteLine();
+            //var obj3 = curLinear.GetResult<double>(test27);
             
+            //obj3.ForEach(x => Console.WriteLine(x));
+
+            Console.WriteLine(test29);
+            Console.WriteLine("");
+            var obj3 = curLinear.GetResult<double>(test29);
             obj3.ForEach(x => Console.WriteLine(x));
+            // obj3.ForEach(x => Console.WriteLine(string.Format("{0} : {1} : {2}", x.Name, x.Lv.ToString(), x.ShipType)));
 
         }
 

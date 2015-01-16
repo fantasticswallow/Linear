@@ -93,7 +93,7 @@ namespace artfulplace.Linear.Lambda
             }
             else if (Regex.IsMatch(target, "^[0-9]+L$"))
             {
-                curType = ArgumentInfo.ArgumentType.Integer;
+                curType = ArgumentInfo.ArgumentType.Long;
             }
             else if (Regex.IsMatch(target, "^(true|false)$", RegexOptions.IgnoreCase))
             {
@@ -190,7 +190,7 @@ namespace artfulplace.Linear.Lambda
             }
             if (target.Contains("="))
             {
-                opList.Add(ExpressionType.Equal);
+                opList.Add(ExpressionType.Assign);
             }
             opList.Add(ExpressionType.Constant);
             if (opList.Count == 1)

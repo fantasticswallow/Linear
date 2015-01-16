@@ -144,8 +144,14 @@ namespace artfulplace.Linear.Lambda
                         case Core.ArgumentInfo.ArgumentType.Method:
                             var ms = Core.MethodParser.MethodParse(info.ExpressionString1).ToArray();
                             Expression expr = null;
+                            var skipLoop = false;
                             foreach (var i in ms)
                             {
+                                if (skipLoop)
+                                {
+                                    skipLoop = false;
+                                    continue;
+                                }
                                 if (expr == null)
                                 {
                                     if (args.Any(x => x.Name == i.Name))
@@ -154,7 +160,60 @@ namespace artfulplace.Linear.Lambda
                                     }
                                     else // 公開されたメソッドとの対応を行えるようにする
                                     {
-                                        
+                                        expr = StandardExntensionMethods.GetStandardExpression(i, args);
+                                        if (expr == null)
+                                        {
+                                            if (i.Name == "_$")
+                                            {
+                                                if (ms.Length >= 2)
+                                                {
+                                                    skipLoop = true;
+                                                    var a3 = i.Args.First().Value;
+                                                    var t2 = Type.GetType(a3);
+                                                    var i2 = ms.ElementAt(1);
+                                                    Expression[] exprs = null;
+                                                    if (i2.Args != null)
+                                                    {
+                                                        exprs = i2.Args.Select<Core.ArgumentInfo, Expression>(_ =>
+                                                        {
+                                                            if (args.Any(x => x.Name == _.Value))
+                                                            {
+                                                                return args.Find(x => x.Name == _.Value);
+                                                            }
+                                                            else
+                                                            {
+                                                                return Expression.Constant(_.GetValue(), _.GetType2());
+                                                            }
+
+                                                        }).ToArray();
+                                                    }
+                                                    try
+                                                    {
+                                                        expr = Expression.Call(t2, i2.Name, i2.GetArgumentTypes(), exprs);
+                                                    }
+                                                    catch (Exception ex)
+                                                    {
+                                                        if (ex is InvalidOperationException)
+                                                        {
+                                                            expr = Expression.Call(t2, i2.Name, null, exprs);
+                                                        }
+                                                        else
+                                                        {
+                                                            throw ex;
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    throw new ArgumentException("_$ must Call Method.");
+                                                }
+                                            }
+                                            
+                                            if (expr == null)
+                                            {
+                                                throw new ArgumentException(string.Format("メソッド名 {0} に対応するメソッドは共通メソッドで定義されていません", i.Name));
+                                            }
+                                        }
                                         
                                     }
                                 }

@@ -20,7 +20,8 @@ namespace artfulplace.Linear
             this.IsSafeMode = true;
             this.MemoriedCollection = new Dictionary<string, IEnumerable>();
             this.ExtendExpressionCollection = new Dictionary<string, Expression>();
-            this.ExpressionCompileCollection = new Dictionary<string, Func<MethodInfo, List<ParameterExpression>, Dictionary<string, Expression>, Expression>>();
+            this.SourceProviders = new Dictionary<string, SourceProviderBase>();
+            // this.ExpressionCompileCollection = new Dictionary<string, Func<MethodInfo, List<ParameterExpression>, Dictionary<string, Expression>, Expression>>();
             this.CompiledQueryable = new Dictionary<string, LinearQueryable>();
             this.CompiledExpressions = new Dictionary<string, LambdaExpression>();
             builder.LinearReference = this;
@@ -31,7 +32,8 @@ namespace artfulplace.Linear
             this.IsSafeMode = safeMode;
             this.MemoriedCollection = new Dictionary<string, IEnumerable>();
             this.ExtendExpressionCollection = new Dictionary<string, Expression>();
-            this.ExpressionCompileCollection = new Dictionary<string, Func<MethodInfo, List<ParameterExpression>, Dictionary<string, Expression>, Expression>>();
+            this.SourceProviders = new Dictionary<string, SourceProviderBase>();
+            // this.ExpressionCompileCollection = new Dictionary<string, Func<MethodInfo, List<ParameterExpression>, Dictionary<string, Expression>, Expression>>();
             this.CompiledQueryable = new Dictionary<string, LinearQueryable>();
             this.CompiledExpressions = new Dictionary<string, LambdaExpression>();
             builder.LinearReference = this;
@@ -43,7 +45,8 @@ namespace artfulplace.Linear
         public bool IsSafeMode { get; private set; }
 
         public Dictionary<string, Expression> ExtendExpressionCollection { get; set; }
-        public Dictionary<string, Func<MethodInfo,List<ParameterExpression>,Dictionary<string,Expression>,Expression>> ExpressionCompileCollection { get; set; }
+        public Dictionary<string, SourceProviderBase> SourceProviders { get; set; }
+        // public Dictionary<string, Func<MethodInfo,List<ParameterExpression>,Dictionary<string,Expression>,Expression>> ExpressionCompileCollection { get; set; }
 
         public Action<string> WriteAction { get; set; }
 
@@ -60,6 +63,11 @@ namespace artfulplace.Linear
         public void AddCollection<T>(string name, IEnumerable<T> collection)
         {
             MemoriedCollection.Add(name, collection);
+        }
+
+        public void AddProvider (SourceProviderBase sp)
+        {
+            SourceProviders.Add(sp.Name, sp);
         }
 
         /// <summary>
@@ -106,6 +114,13 @@ namespace artfulplace.Linear
                     var sr = new SourceReference(tName, CallingAssembly);
                     return this.From(sr);
                 }
+                else if (arg1.Type == ArgumentInfo.ArgumentType.Method)
+                {
+                    var mt = MethodParser.MethodParse(arg1.Value);
+                    var m1 = mt.First();
+                    var sp = SourceProviders[m1.Name];
+                    return sp.GetSource(mt.ElementAt(1));
+                }
                 else
                 {
                     throw new ArgumentException("Fromの引数はstring、またはSourceReference(Method)でなくてはいけません");
@@ -145,6 +160,10 @@ namespace artfulplace.Linear
                 default:
                     throw new ArgumentException("Collectionが指定されていません。クエリの最初は From(string),または From(SourceReference(Method)) から始める必要があります。");
 
+            }
+            if (col == null)
+            { 
+                return null;
             }
             var source1 = col.AsQueryable();
             var xt = source1.GetType().GenericTypeArguments.First();

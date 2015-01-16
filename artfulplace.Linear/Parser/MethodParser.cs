@@ -15,7 +15,5 @@ namespace artfulplace.Linear.Core
             var parser2 = new MethodSpliter();
             return parser2.RootSplit(target, info);
         }
-
-
     }
 }

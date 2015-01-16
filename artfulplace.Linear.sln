@@ -7,11 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "artfulplace.Linear.Linq", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConsole", "TestConsole\TestConsole.csproj", "{3F7A65C5-8FF0-4BC9-808C-80EBE3217144}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "artfulplace.Linear.DataParser", "artfulplace.Linear.DataParser\artfulplace.Linear.DataParser.csproj", "{270BFB2A-C73E-44BF-9B43-CC791D3A5414}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "artfulplace.Linear.Xml", "artfulplace.Linear.Xml\artfulplace.Linear.Xml.csproj", "{9DAA5CD8-703B-4ABF-BA61-01697F49552A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntellisenseTestWindow", "IntellisenseTestWindow\IntellisenseTestWindow.csproj", "{26A628B6-9E26-4740-B64D-3BE4D6CD91B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "artfulplace.Linear.Shirley", "artfulplace.Linear.Shirley\artfulplace.Linear.Shirley.csproj", "{985FA18F-2ECE-4774-968E-8A1BE611A481}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "artfulplace.Linear.ExtendShadow2", "artfulplace.Linear.ExtendShadow2\artfulplace.Linear.ExtendShadow2.csproj", "{56386257-DA64-42FA-9EB8-5C6C4C6330CF}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
@@ -28,15 +28,15 @@ Global
 		SccProjectUniqueName3 = TestConsole\\TestConsole.csproj
 		SccProjectName3 = TestConsole
 		SccLocalPath3 = TestConsole
-		SccProjectUniqueName4 = artfulplace.Linear.DataParser\\artfulplace.Linear.DataParser.csproj
-		SccProjectName4 = artfulplace.Linear.DataParser
-		SccLocalPath4 = artfulplace.Linear.DataParser
-		SccProjectUniqueName5 = artfulplace.Linear.Xml\\artfulplace.Linear.Xml.csproj
-		SccProjectName5 = artfulplace.Linear.Xml
-		SccLocalPath5 = artfulplace.Linear.Xml
-		SccProjectUniqueName6 = IntellisenseTestWindow\\IntellisenseTestWindow.csproj
-		SccProjectName6 = IntellisenseTestWindow
-		SccLocalPath6 = IntellisenseTestWindow
+		SccProjectUniqueName4 = IntellisenseTestWindow\\IntellisenseTestWindow.csproj
+		SccProjectName4 = IntellisenseTestWindow
+		SccLocalPath4 = IntellisenseTestWindow
+		SccProjectUniqueName5 = artfulplace.Linear.Shirley\\artfulplace.Linear.Shirley.csproj
+		SccProjectName5 = artfulplace.Linear.Shirley
+		SccLocalPath5 = artfulplace.Linear.Shirley
+		SccProjectUniqueName6 = artfulplace.Linear.ExtendShadow2\\artfulplace.Linear.ExtendShadow2.csproj
+		SccProjectName6 = artfulplace.Linear.ExtendShadow2
+		SccLocalPath6 = artfulplace.Linear.ExtendShadow2
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,18 +55,18 @@ Global
 		{3F7A65C5-8FF0-4BC9-808C-80EBE3217144}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F7A65C5-8FF0-4BC9-808C-80EBE3217144}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F7A65C5-8FF0-4BC9-808C-80EBE3217144}.Release|Any CPU.Build.0 = Release|Any CPU
-		{270BFB2A-C73E-44BF-9B43-CC791D3A5414}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{270BFB2A-C73E-44BF-9B43-CC791D3A5414}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{270BFB2A-C73E-44BF-9B43-CC791D3A5414}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{270BFB2A-C73E-44BF-9B43-CC791D3A5414}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9DAA5CD8-703B-4ABF-BA61-01697F49552A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9DAA5CD8-703B-4ABF-BA61-01697F49552A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9DAA5CD8-703B-4ABF-BA61-01697F49552A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9DAA5CD8-703B-4ABF-BA61-01697F49552A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{26A628B6-9E26-4740-B64D-3BE4D6CD91B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{26A628B6-9E26-4740-B64D-3BE4D6CD91B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26A628B6-9E26-4740-B64D-3BE4D6CD91B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26A628B6-9E26-4740-B64D-3BE4D6CD91B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{985FA18F-2ECE-4774-968E-8A1BE611A481}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{985FA18F-2ECE-4774-968E-8A1BE611A481}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{985FA18F-2ECE-4774-968E-8A1BE611A481}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{985FA18F-2ECE-4774-968E-8A1BE611A481}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56386257-DA64-42FA-9EB8-5C6C4C6330CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56386257-DA64-42FA-9EB8-5C6C4C6330CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56386257-DA64-42FA-9EB8-5C6C4C6330CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56386257-DA64-42FA-9EB8-5C6C4C6330CF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

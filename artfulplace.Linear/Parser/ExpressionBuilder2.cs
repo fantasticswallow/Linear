@@ -159,30 +159,30 @@ namespace artfulplace.Linear.Lambda
                                                     throw new ArgumentException("_$ must Call Method.");
                                                 }
                                             }
-                                            else if (LinearReference.ExpressionCompileCollection.ContainsKey(i.Name))
-                                            {
-                                                var mtExpr = i.Args.Select(x =>
-                                                {
-                                                    if (x.Type == Core.ArgumentInfo.ArgumentType.Method)
-                                                    {
-                                                        var exi = new ExpressionBasicInfo();
-                                                        exi.ConstantType = Core.ArgumentInfo.ArgumentType.Method;
-                                                        exi.ExpressionType = ExpressionType.Constant;
-                                                        exi.ExpressionString1 = x.Value;
-                                                        return exi;
-                                                    }
-                                                    else
-                                                    {
-                                                        var exi = new ExpressionBasicInfo();
-                                                        exi.ConstantType = x.Type;
-                                                        exi.ExpressionType = ExpressionType.Constant;
-                                                        exi.ExpressionString1 = x.Value;
-                                                        return exi;
-                                                    }
-                                                }).ToDictionary<ExpressionBasicInfo, string, Expression>(x => x.ExpressionString1, x => GenerateExpression(x, args));
+                                            //else if (LinearReference.ExpressionCompileCollection.ContainsKey(i.Name))
+                                            //{
+                                            //    var mtExpr = i.Args.Select(x =>
+                                            //    {
+                                            //        if (x.Type == Core.ArgumentInfo.ArgumentType.Method)
+                                            //        {
+                                            //            var exi = new ExpressionBasicInfo();
+                                            //            exi.ConstantType = Core.ArgumentInfo.ArgumentType.Method;
+                                            //            exi.ExpressionType = ExpressionType.Constant;
+                                            //            exi.ExpressionString1 = x.Value;
+                                            //            return exi;
+                                            //        }
+                                            //        else
+                                            //        {
+                                            //            var exi = new ExpressionBasicInfo();
+                                            //            exi.ConstantType = x.Type;
+                                            //            exi.ExpressionType = ExpressionType.Constant;
+                                            //            exi.ExpressionString1 = x.Value;
+                                            //            return exi;
+                                            //        }
+                                            //    }).ToDictionary<ExpressionBasicInfo, string, Expression>(x => x.ExpressionString1, x => GenerateExpression(x, args));
 
-                                                expr = LinearReference.ExpressionCompileCollection[i.Name].Invoke(i, args, mtExpr);
-                                            }
+                                            //    expr = LinearReference.ExpressionCompileCollection[i.Name].Invoke(i, args, mtExpr);
+                                            //}
                                             else if (LinearReference.ExtendExpressionCollection.ContainsKey(i.Name))
                                             {
                                                 expr = LinearReference.ExtendExpressionCollection[i.Name];

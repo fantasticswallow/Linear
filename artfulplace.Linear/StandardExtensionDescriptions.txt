@@ -1,0 +1,14 @@
+﻿artfulplace.Linear.StandardExtensionMethods
+
+・IsRegexAnd / IsRegexNot / IsRegexXor
+artfulplace.Linear.Linq.MultiRegex のメソッドに対応します
+引数はすべて (string input, string pattern1, string pattern2)です
+
+それぞれ pattern1 && pattern2 , pattern1 && !pattern2 , (pattern1 && !(pattern2)) || (!(patetrn1) && (pattern2)) に対応するRegex.IsMatchの結果を返します
+
+・StringFormat
+System.String.Format のメソッドに対応します
+引数は (string, param object[]) です
+
+第1引数のパターンに従い、残りの引数の値を含む文字列を作成し返します
+

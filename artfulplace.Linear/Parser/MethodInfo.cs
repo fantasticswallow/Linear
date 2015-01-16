@@ -54,7 +54,7 @@ namespace artfulplace.Linear.Core
                 case Core.ArgumentInfo.ArgumentType.Integer:
                     return int.Parse(this.Value.Trim());
                 case Core.ArgumentInfo.ArgumentType.Long:
-                    return long.Parse(this.Value.Trim());
+                    return long.Parse(this.Value.Remove(this.Value.Length - 1).Trim());
                 case Core.ArgumentInfo.ArgumentType.Double:
                     return double.Parse(this.Value.Trim());
                 case Core.ArgumentInfo.ArgumentType.Boolean:

@@ -120,6 +120,10 @@ namespace artfulplace.Linear.Core
                 {
                     info.Type = ArgumentInfo.ArgumentType.Integer;
                 }
+                else if (Regex.IsMatch(_, "^[0-9]+[lL]$"))
+                {
+                    info.Type = ArgumentInfo.ArgumentType.Long;
+                }
                 else if (Regex.IsMatch(_, "^(true|false)$", RegexOptions.IgnoreCase))
                 {
                     info.Type = ArgumentInfo.ArgumentType.Boolean;
